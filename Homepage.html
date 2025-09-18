@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Page</title>
+
+  <style>
+  /* รีเซ็ตค่าเริ่มต้น */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg,#FEFEF7 0%, #FFFFF0 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* กล่องหลัก */
+.register-container {
+  display: flex;
+  max-width: 900px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* ฝั่งโลโก้ */
+.logo-section {
+  flex: 1;
+  background: linear-gradient(135deg,#FEFEF7 0%, #FFFFF0 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+.logo-section img {
+  max-width: 120%;
+  height: auto;
+}
+
+/* ฝั่งฟอร์ม */
+.form-section {
+  flex: 1.2;
+  padding: 40px;
+  background: linear-gradient(135deg,#FEFEF7 0%, #FFFFF0 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+    margin-top: 40px; 
+}
+
+.form-section h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #333;
+}
+
+.form-section.register-form {
+  margin-top: 40px; /* ปรับค่าตามที่ต้องการ เช่น 40px */
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: 0.3s;
+}
+
+.form-group input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 5px rgba(102, 126, 234, 0.5);
+  outline: none;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg,#40596c 0%, #25406e 100%);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+  background: linear-gradient(135deg,#667eea 0%, #764ba2 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+}
+
+
+
+/* Responsive */
+@media(max-width: 768px) {
+  .register-container {
+    flex-direction: column;
+  }
+
+  .logo-section {
+    padding: 20px;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <!-- ส่วนโลโก้ -->
+    <div class="logo-section">
+      <img src="tsc512.jpg" alt="Logo">
+    </div>
+
+    
+    <!-- Register -->
+    <div class="form-section  register-form" style="display:none;" >
+      <h2>Register</h2>
+    <form id="registrationForm">
+    <div class="form-group">
+        <label for="fullname">Full Name</label>
+        <input type="text" id="fullname" name="fullname" placeholder="Enter your full name" required>
+    </div>
+
+    <div class="form-group">
+        <label for="username">User</label>
+        <input type="text" id="username" name="username" placeholder="Enter your username" required>
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="new-password" required>
+    </div>
+
+    <div class="form-group">
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+    </div>
+
+    <div class="form-group">
+        <label for="supplier_name">Supplier's Name</label>
+        <input type="text" id="supplier_name" name="supplier_name" placeholder="Enter your Supplier's Name or None">
+    </div>
+
+    <button type="submit" class="btn-submit" id="btnRegisUser">Register</button>
+
+    <a href="#" id="registertologin"> Login </a>
+</form>
+
+    </div>
+    <!-- Login User-->
+      <div class="form-section login-form" >
+      <h2>Login</h2>
+     <form>
+        <div class="form-group">
+          <label for="username">User</label>
+          <input type="text" id="login_username" placeholder="Enter your username" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="login_password" name="login_password" autocomplete="current-password" placeholder="Enter your password" required>
+        </div>
+        <button type="button" class="btn-submit" id="btnloginAdmin">Login</button>
+        <a href="" id="logintoRegister"> Register </a>
+      </form>
+    </div>
+
+  </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="Home.js"></script>
+
+
+</body>
+</html>   

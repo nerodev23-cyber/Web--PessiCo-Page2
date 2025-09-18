@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Modal Example</title>
+    <style>
+/* Reset & Font */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f8;
+    color: #333;
+    padding: 20px;
+}
+
+/* Heading */
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+/* Button */
+button {
+    background-color: #1B1B1B;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+}
+button:hover {
+    background-color:#808080;
+}
+
+/* Table */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+}
+thead {
+    background-color: #FEFEF7;
+    color: black;
+}
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+tbody tr:hover {
+    background-color: #eaf1fb;
+}
+
+/* Modal style */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.5);
+    transition: 0.3s;
+}
+.modal-content {
+    background-color: #fff;
+    margin: 8% auto; 
+    padding: 25px 30px;
+    border-radius: 10px;
+    width: 350px;
+    max-width: 90%;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+}
+
+
+/* Model API */
+.api-modal-content {
+  width: 95%;
+  height: 90%;
+  max-width: 95%;
+  max-height: 90%;
+  margin: 2% auto;
+  overflow-y: auto;
+}
+
+
+label {
+    color: black;       /* สีดำ */
+    font-weight: bold;  /* ตัวหนา */
+}
+
+
+/* Close button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.close:hover {
+    color: #e74c3c;
+}
+
+/* Form Inputs */
+input[type="text"], input[type="date"] {
+    width: 100%;
+    padding: 10px 12px;
+    margin: 5px 0 15px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+input[type="text"]:focus, input[type="date"]:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 5px rgba(52,152,219,0.4);
+}
+
+/* Form heading */
+h3 {
+    margin-bottom: 20px;
+    color: #000000;
+    text-align: center;
+}
+
+.openModalBtn {
+   margin-bottom: 20px;
+   margin-left: 30px;
+}
+
+
+
+input[type="radio"] {
+    display: inline-block;
+    margin-top: 20px; /* ✅ ปรับได้เลย */
+    margin-left: 15px;
+    margin-right: 5px;
+    transform: scale(1.2);
+}
+
+#supplierInputContainer {
+    transition: all 0.3s ease-in-out;
+}
+
+.edit-btn {
+    background-color: orange;   /* สีพื้นหลัง */
+    color: white;              /* สีตัวอักษร */
+    border: none;              /* ไม่เอาเส้นขอบ */
+    padding: 5px 12px;         /* ขนาดปุ่ม */
+    border-radius: 5px;        /* มุมโค้ง */
+    cursor: pointer;           /* เปลี่ยนเมาส์เวลา hover */
+    font-weight: bold;         /* ตัวหนา */
+    transition: 0.2s;
+}
+
+.edit-btn:hover {
+    background-color: darkorange; /* สีเข้มขึ้นเวลา hover */
+}
+
+
+/* Animation */
+@keyframes slideIn {
+    from {transform: translateY(-50px); opacity: 0;}
+    to {transform: translateY(0); opacity: 1;}
+}
+
+
+    </style>
+</head>
+<body>
+
+    <h2>ข้อมูลการเข้าชั่ง</h2>
+    <button class="openModalBtn" id="openModalBtn">เพิ่มข้อมูล</button>
+
+        <button class="openModalBtn" id="addDatabase">เพิ่มข้อมูลฐานข้อมูล</button>
+
+
+      <button class="openModalBtn" id="GetDataByAPI">Get Data API</button>
+
+    <!-- Modal Form -->
+    <div id="modalAddData" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModalBtn">&times;</span>
+            <h3>กรอกข้อมูล</h3>
+            <form id="dataForm">
+
+
+                 <div id="supplierInputContainer" ">
+                    <label>กรอกชื่อ Supplier:</label><br>
+                    <input type="text" id="supplierName" readonly><br><br>
+                </div>
+
+                <label>ชื่อ นามสกุล:</label><br>
+                <input type="text" id="fullname" required><br><br>
+
+                <label>ทะเบียนรถ:</label><br>
+                <input type="text" id="carNumber" required><br><br>
+
+                <label>สินค้า:</label><br>
+                <input type="text" id="product" required><br><br>
+
+                 <label>บริษัท:</label><br>
+                <input type="text" id="company" required><br><br>
+
+                <label>วันที่จะเข้าชั่ง:</label><br>
+                <input type="date" id="weightDate" required><br><br>
+
+                 <label>เวลาที่จะเข้าชั่ง:</label><br>
+                <input type="time" id="weightTime" required><br><br>
+                <span id="thaiTime" style="font-weight:bold; color:black;"></span><br><br>
+
+
+                <button type="submit">บันทึก5</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 🔥 Modal สำหรับ Get Data API -->
+<div id="apiModal" class="modal">
+  <div class="modal-content api-modal-content">
+    <span class="close" id="closeApiModal">&times;</span>
+    <h3>ข้อมูลจาก API</h3>
+    <table id="apiDataTable">
+      <thead>
+        <tr>
+          <th>ชื่อ Supplier</th>
+          <th>ชื่อ นามสกุล</th>
+          <th>ทะเบียนรถ</th>
+          <th>สินค้า</th>
+          <th>บริษัท</th>
+          <th>วันที่ที่จะเข้าชั่ง</th>
+          <th>เวลาที่จะเข้าชั่ง</th>
+          <th>แก้ไข</th>
+          <th>Copy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- ✅ API Data จะแสดงตรงนี้ -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+    <!-- ตารางแสดงข้อมูล -->
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>ชื่อ Supplier</th>
+                <th>ชื่อ นามสกุล</th>
+                <th>ทะเบียนรถ</th>
+                <th>สินค้า</th>
+                <th>บริษัท</th>
+                <th>วันที่ที่จะเข้าชั่ง</th>
+                <th>เวลาที่จะเข้าชั่ง</th>
+                 <th>แก้ไข</th>
+                 <th>Copy</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- ข้อมูลจะแสดงที่นี่ -->
+        </tbody>
+    </table>
+
+    <script src="RegisWeigh.js"></script>
+</body>
+</html>

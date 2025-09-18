@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        /* General layout */
+        .body-container {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        /* Table styling */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .data-table th {
+            background-color: #f2f2f2;
+        }
+
+        /* Buttons */
+        .btn-accept {
+            background: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-reject {
+            background: #f44336;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .logout-btn {
+            background: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            float: right;
+        }
+
+        /* Search input */
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            padding: 5px;
+            width: 250px;
+        }
+
+        .search-btn {
+            padding: 5px 10px;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+
+        /* Session warning */
+        .session-warning {
+            display: none;
+            background: #ff9800;
+            color: white;
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body class="body-container">
+    <button class="logout-btn">ออกจากระบบ</button>
+    <!-- ช่องค้นหา -->
+    <div class="search-container">
+        <input type="text" class="search-input" placeholder="ค้นหาผู้ใช้...">
+        <button class="search-btn">ค้นหา</button>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>User</th>
+                <th>Password</th>
+                <th>Phone</th>
+                <th>Supplier Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>John Doe</td>
+                <td>johnd</td>
+                <td>12345</td>
+                <td>0800000000</td>
+                <td>ABC Supplier</td>
+                <td>
+                    <button class="btn-accept">ยอมรับ</button>
+                    <button class="btn-reject">ไม่ยอมรับ</button>
+                </td>
+            </tr>
+            <tr>
+                <td>Jane Smith</td>
+                <td>janes</td>
+                <td>abcde</td>
+                <td>0811111111</td>
+                <td>XYZ Supplier</td>
+                <td>
+                    <button class="btn-accept">ยอมรับ</button>
+                    <button class="btn-reject">ไม่ยอมรับ</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+ <script>
+    const searchInput = document.querySelector('.search-input');
+    const searchBtn = document.querySelector('.search-btn');
+    const tableBody = document.querySelector('.data-table tbody');
+    
+    // ฟังก์ชันกรองตาราง
+    function filterTable() {
+        const filter = searchInput.value.toLowerCase();
+        const rows = tableBody.getElementsByTagName('tr');
+        
+        for (let row of rows) {
+            const cells = row.getElementsByTagName('td');
+            let match = false;
+            for (let i = 0; i < cells.length - 1; i++) { // ไม่ตรวจ Action column
+                if (cells[i].innerText.toLowerCase().includes(filter)) {
+                    match = true;
+                    break;
+                }
+            }
+            row.style.display = match ? '' : 'none';
+        }
+    }
+    
+  /*  
+document.addEventListener('DOMContentLoaded', () => {
+    const session = JSON.parse(sessionStorage.getItem('userSession'));
+    
+    if (!session || !session.sessionKey) {
+        alert('กรุณาเข้าสู่ระบบก่อน');
+        window.location.href = '/page/Homepage.html';
+        return;
+    }
+
+    console.log('ยินดีต้อนรับ admin:', session.username);
+
+    //  ตรวจสอบ session หมดอายุทุกวินาที (ไม่ต้องเรียก server)
+    setInterval(() => {
+        const currentSession = JSON.parse(sessionStorage.getItem('userSession'));
+        
+        if (!currentSession || Date.now() > currentSession.expireTime) {
+            alert('Session หมดอายุ กรุณาเข้าสู่ระบบใหม่');
+            sessionStorage.removeItem('userSession');
+            window.location.href = '/page/Homepage.html';
+        }
+    }, 1000);
+});
+  */  
+
+  // ✅ ย้าย loadRegiscarData ออกมาข้างนอก (Global Scope)
+async function loadRegiscarData() {
+    try {
+        const session = JSON.parse(sessionStorage.getItem('userSession'));
+        
+        const response = await fetch('http://localhost:3000/api/get-regiscar-data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionKey: session.sessionKey })
+        });
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                alert('Session หมดอายุ กรุณาเข้าสู่ระบบใหม่');
+                sessionStorage.removeItem('userSession');
+                window.location.href = '/page/Homepage.html';
+                return;
+            }
+            throw new Error('Failed to fetch data');
+        }
+
+        const result = await response.json();
+        displayData(result.data);
+
+    } catch (err) {
+        console.error('Error loading data:', err);
+        alert('เกิดข้อผิดพลาดในการโหลดข้อมูล');
+    }
+}
+
+// ✅ ย้าย displayData ออกมาข้างนอกด้วย
+function displayData(data) {
+    console.log('Displaying data:', data);
+
+    const tbody = document.querySelector('.data-table tbody');
+    if (!tbody) {
+        console.error('Table not found!');
+        return;
+    }
+    
+    tbody.innerHTML = ''; // ล้างข้อมูลเก่า
+
+    if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6">ไม่มีข้อมูล</td></tr>';
+        return;
+    }
+
+   data.forEach(row => {
+        const tr = document.createElement('tr');
+        
+        // ✅ สร้าง userData object สำหรับส่งไปยัง handleAccept
+        const userDataForAccept = {
+            username: row.username,
+            password_hash: row.password_hash,
+            supplier_name: row.supplier_name
+        };
+
+        tr.innerHTML = `
+            <td>${row.full_name || 'N/A'}</td>
+            <td>${row.username || 'N/A'}</td>
+            <td>${row.password_hash || 'N/A'}</td>
+            <td>${row.phone || 'N/A'}</td>
+            <td>${row.supplier_name || 'N/A'}</td>
+            <td>
+                <button class="btn-accept" onclick="handleAccept(${JSON.stringify(userDataForAccept).replace(/"/g, '&quot;')})">ยอมรับ</button>
+                <button class="btn-reject" onclick="handleReject('${row.username}')">ไม่ยอมรับ</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// ✅ ฟังก์ชัน handleReject ใช้งานได้แล้ว
+async function handleReject(username) {
+    if (!confirm(`คุณต้องการปฏิเสธและลบ ${username} หรือไม่?`)) {
+        return;
+    }
+
+    try {
+        const session = JSON.parse(sessionStorage.getItem('userSession'));
+        
+        const response = await fetch('http://localhost:3000/api/reject-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                sessionKey: session.sessionKey,
+                username: username 
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            alert(result.message);
+            
+            // ✅ ตอนนี้ loadRegiscarData() เรียกได้แล้ว!
+            await loadRegiscarData();
+            
+        } else {
+            alert(result.message || 'เกิดข้อผิดพลาด');
+        }
+
+    } catch (err) {
+        console.error('Error rejecting user:', err);
+        alert('เกิดข้อผิดพลาดในการลบ User');
+    }
+}
+
+// ✅ ฟังก์ชัน handleAccept
+async function handleAccept(username) {
+    if (!confirm(`คุณต้องการยอมรับ ${username} หรือไม่?`)) {
+        return;
+    }
+    
+    console.log('Accept user:', username);
+    alert(`ยอมรับ ${username} แล้ว (ฟีเจอร์ยังไม่พร้อม)`);
+}
+
+// ✅ DOMContentLoaded เหลือแค่ session check และ initial load
+document.addEventListener('DOMContentLoaded', async () => {
+    const session = JSON.parse(sessionStorage.getItem('userSession'));
+    
+    if (!session || !session.sessionKey) {
+        alert('กรุณาเข้าสู่ระบบก่อน');
+        window.location.href = '/page/Homepage.html';
+        return;
+    }
+
+    console.log('ยินดีต้อนรับ admin:', session.username);
+
+    // ตรวจสอบ session หมดอายุทุกวินาที
+    setInterval(() => {
+        const currentSession = JSON.parse(sessionStorage.getItem('userSession'));
+        
+        if (!currentSession || Date.now() > currentSession.expireTime) {
+            alert('Session หมดอายุ กรุณาเข้าสู่ระบบใหม่');
+            sessionStorage.removeItem('userSession');
+            window.location.href = '/page/Homepage.html';
+        }
+    }, 1000);
+
+    // ✅ โหลดข้อมูลครั้งแรก
+    await loadRegiscarData();
+});
+
+
+
+
+
+/*
+async function handleAccept(username) {
+    if (!confirm(`คุณต้องการยอมรับ ${username} หรือไม่?`)) {
+        return;
+    }
+
+    try {
+        const session = JSON.parse(sessionStorage.getItem('userSession'));
+        
+        const response = await fetch('http://localhost:3000/api/accept-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                sessionKey: session.sessionKey,
+                username: username 
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            alert(result.message);
+            
+            // ✅ รีเฟรชข้อมูลในตารางใหม่
+            await loadRegiscarData();
+            
+        } else {
+            alert(result.message || 'เกิดข้อผิดพลาด');
+        }
+
+    } catch (err) {
+        console.error('Error accepting user:', err);
+        alert('เกิดข้อผิดพลาดในการยอมรับ User');
+    }
+}
+*/
+
+// ✅ ปรับปรุง handleAccept ให้รับ userData object
+async function handleAccept(userData) {
+    if (!confirm(`คุณต้องการยอมรับ ${userData.username} หรือไม่?`)) {
+        return;
+    }
+
+    try {
+        const session = JSON.parse(sessionStorage.getItem('userSession'));
+        
+        const response = await fetch('http://localhost:3000/api/accept-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                sessionKey: session.sessionKey,
+                userData: userData  // ส่ง userData object ทั้งหมด
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            alert(result.message);
+            
+            // ✅ รีเฟรชข้อมูลในตารางใหม่
+            await loadRegiscarData();
+            
+        } else {
+            alert(result.message || 'เกิดข้อผิดพลาด');
+        }
+
+    } catch (err) {
+        console.error('Error accepting user:', err);
+        alert('เกิดข้อผิดพลาดในการยอมรับ User');
+    }
+}
+
+
+</script>
+</body>
+</html>
