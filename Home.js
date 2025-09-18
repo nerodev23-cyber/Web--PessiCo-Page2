@@ -53,7 +53,7 @@ btnloginAdmin.addEventListener('click', async (e) => {
         username: login_username,
         password: login_password
     };
-debugger
+
     try {
         const response = await fetch('https://server-pepsicola-1.onrender.com/loginAdminandUser', {
             method: 'POST',
