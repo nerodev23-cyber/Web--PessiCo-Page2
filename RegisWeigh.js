@@ -194,7 +194,7 @@ addDatabase.addEventListener('click',async() => {
         return;
     }
     try{
-        const response = await fetch('http://localhost:3000/addDataMySQL' , {
+        const response = await fetch('https://server-pepsicola-1.onrender.com/addDataMySQL' , {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (!session || !session.sessionKey) {
         alert('กรุณาเข้าสู่ระบบก่อน');
-        window.location.href = '/page/Homepage.html';
+        window.location.href = '/Homepage.html';
         return;
     }
 
@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!currentSession || Date.now() > currentSession.expireTime) {
             alert('Session หมดอายุ กรุณาเข้าสู่ระบบใหม่');
             sessionStorage.removeItem('userSession');
-            window.location.href = '/page/Homepage.html';
+            window.location.href = '/Homepage.html';
         }
     }, 1000);
 

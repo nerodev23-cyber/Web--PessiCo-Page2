@@ -183,7 +183,7 @@ async function loadRegiscarData() {
     try {
         const session = JSON.parse(sessionStorage.getItem('userSession'));
         
-        const response = await fetch('http://localhost:3000/api/get-regiscar-data', {
+        const response = await fetch('https://server-pepsicola-1.onrender.com/api/get-regiscar-data', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sessionKey: session.sessionKey })
@@ -193,7 +193,7 @@ async function loadRegiscarData() {
             if (response.status === 401) {
                 alert('Session หมดอายุ กรุณาเข้าสู่ระบบใหม่');
                 sessionStorage.removeItem('userSession');
-                window.location.href = '/page/Homepage.html';
+                window.location.href = '/Homepage.html';
                 return;
             }
             throw new Error('Failed to fetch data');
@@ -259,7 +259,7 @@ async function handleReject(username) {
     try {
         const session = JSON.parse(sessionStorage.getItem('userSession'));
         
-        const response = await fetch('http://localhost:3000/api/reject-user', {
+        const response = await fetch('https://server-pepsicola-1.onrender.com/api/reject-user', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (!session || !session.sessionKey) {
         alert('กรุณาเข้าสู่ระบบก่อน');
-        window.location.href = '/page/Homepage.html';
+        window.location.href = '/Homepage.html';
         return;
     }
 
@@ -315,7 +315,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!currentSession || Date.now() > currentSession.expireTime) {
             alert('Session หมดอายุ กรุณาเข้าสู่ระบบใหม่');
             sessionStorage.removeItem('userSession');
-            window.location.href = '/page/Homepage.html';
+            window.location.href = '/Homepage.html';
         }
     }, 1000);
 
@@ -324,45 +324,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 
-
-
-
-/*
-async function handleAccept(username) {
-    if (!confirm(`คุณต้องการยอมรับ ${username} หรือไม่?`)) {
-        return;
-    }
-
-    try {
-        const session = JSON.parse(sessionStorage.getItem('userSession'));
-        
-        const response = await fetch('http://localhost:3000/api/accept-user', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                sessionKey: session.sessionKey,
-                username: username 
-            })
-        });
-
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-            alert(result.message);
-            
-            // ✅ รีเฟรชข้อมูลในตารางใหม่
-            await loadRegiscarData();
-            
-        } else {
-            alert(result.message || 'เกิดข้อผิดพลาด');
-        }
-
-    } catch (err) {
-        console.error('Error accepting user:', err);
-        alert('เกิดข้อผิดพลาดในการยอมรับ User');
-    }
-}
-*/
 
 // ✅ ปรับปรุง handleAccept ให้รับ userData object
 async function handleAccept(userData) {
@@ -373,7 +334,7 @@ async function handleAccept(userData) {
     try {
         const session = JSON.parse(sessionStorage.getItem('userSession'));
         
-        const response = await fetch('http://localhost:3000/api/accept-user', {
+        const response = await fetch('https://server-pepsicola-1.onrender.com/api/accept-user', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 

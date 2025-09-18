@@ -32,9 +32,9 @@ function redirectToUserPage(userType) {
     console.log('Redirecting user type:', userType);
 
     if (userType === 'admin') {
-        window.location.href = '/page/Admin.html';
+        window.location.href = '/Admin.html';
     } else if (userType === 'user') {
-        window.location.href = '/page/RegisWeigh.html';
+        window.location.href = '/RegisWeigh.html';
     }
 }
 
@@ -53,18 +53,24 @@ btnloginAdmin.addEventListener('click', async (e) => {
         username: login_username,
         password: login_password
     };
-
+debugger
     try {
-        const response = await fetch('http://localhost:3000/loginAdminandUser', {
+        const response = await fetch('https://server-pepsicola-1.onrender.com/loginAdminandUser', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
         });
 
+        //  const response = await fetch('http://localhost:3000/loginAdminandUser', {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify(data),
+        // });
+
 
         if (response.status === 440) {
             alert('Session หมดอายุ');
-            window.location.href = '/page/Homepage.html';
+            window.location.href = '/Homepage.html';
             return;
         }
 
@@ -104,76 +110,12 @@ function checkSession() {
     if (now > session.expireTime) {
         alert('Session หมดอายุ กรุณาเข้าสู่ระบบใหม่');
         sessionStorage.removeItem('userSession');
-        window.location.href = '/page/Homepage.html';
+        window.location.href = '/Homepage.html';
     }
 }
 // เรียกตรวจสอบ session ทุกครั้งที่โหลดหน้า
 checkSession();
 
-// =============================================================================================
-
-
-
-    // ลงทะเบียน
-// btnloginAdmin.addEventListener('click', async (e) => {
-//     e.preventDefault();
-
-//        // เช็คว่า login แล้วหรือยัง
-//     if (localStorage.getItem('userSession')) {
-//         alert("คุณได้เข้าสู่ระบบแล้ว!");
-//         return;
-//     }
-
-
-//     const login_username = document.getElementById('login_username').value;
-//     const login_password = document.getElementById('login_password').value;
-
-//      const data = { 
-//         username: login_username,
-//         password: login_password
-//     };
-
-
-//     try {
-//         const response = await fetch('http://localhost:4000/loginAdminandUser', {
-//             method: 'POST',
-//             headers: {'Content-Type': 'application/json'},
-//             body: JSON.stringify(data)
-//         });
-
-//         const result = await response.json();
-
-//         if (response.ok && result.data?.length > 0) {
-//             const user = result.data[0];
-            
-//             // สร้าง session
-//             const sessionData = {
-//                 username: user.username,
-//                 type: user.type,
-//                 loginTime: Date.now(),
-//                 sessionId: Date.now() + '_' + Math.random()
-//             };
-
-//             localStorage.setItem('userSession', JSON.stringify(sessionData));
-            
-//             alert(`เข้าสู่ระบบ ${user.type} สำเร็จ!`);
-            
-//             // redirect ตาม type
-//             if (user.type === 'admin') {
-//                 window.location.href = 'http://127.0.0.1:5500/page/Admin.html';
-//             } else if(user.type == 'user') {
-//                 window.location.href = 'http://127.0.0.1:5500/page/RegisWeigh.html';
-//             }
-//         } else {
-//             alert(result.message || "เข้าสู่ระบบไม่สำเร็จ");
-//         }
-//     } catch (err) {
-//         alert("เกิดข้อผิดพลาด");
-//     }
-// });
-
-
-    // Rigister User
 
     registrationForm.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -198,7 +140,7 @@ checkSession();
     }
     
     try {
-        const response = await fetch('http://localhost:3000/api/register', {
+        const response = await fetch('https://server-pepsicola-1.onrender.com/api/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
