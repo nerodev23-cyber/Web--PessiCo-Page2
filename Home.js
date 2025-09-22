@@ -54,6 +54,15 @@ btnloginAdmin.addEventListener('click', async (e) => {
         password: login_password
     };
 
+        Swal.fire({
+        title: 'กำลังเข้าสู่ระบบ...',
+        text: 'กรุณารอสักครู่',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     try {
         const response = await fetch('https://server-pepsicola-1.onrender.com/loginAdminandUser', {
             method: 'POST',
@@ -89,8 +98,16 @@ btnloginAdmin.addEventListener('click', async (e) => {
         }));
 
 
-            alert(`เข้าสู่ระบบ ${user.type} สำเร็จ!`);
+           Swal.fire({
+            icon: 'success',
+            title: `เข้าสู่ระบบ ${user.type} สำเร็จ!`,
+            text: 'กำลังเข้าสู่ระบบ...',
+            confirmButtonText: 'ตกลง',
+            allowOutsideClick: false
+        }).then(() => {
             redirectToUserPage(user.type);
+        });
+      
          
         } else {
             alert(result.message || "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
@@ -120,7 +137,7 @@ checkSession();
     registrationForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    debugger
+    
     
     // Validate ข้อมูลก่อนส่ง
     const fullname = document.getElementById('fullname').value.trim();
@@ -138,6 +155,17 @@ checkSession();
         });
         return;
     }
+
+         // 👉 แสดง Loading
+    Swal.fire({
+        title: 'กำลังบันทึก...',
+        text: 'กรุณารอสักครู่',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    
     
     try {
         const response = await fetch('https://server-pepsicola-1.onrender.com/api/register', {
