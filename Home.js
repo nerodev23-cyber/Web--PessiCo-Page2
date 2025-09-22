@@ -21,7 +21,7 @@
         registertologin.addEventListener('click', (e) => {
             e.preventDefault();
             loginForm.style.display = 'block';
-            registerForm.style.display = 'none';
+            registerForm.style.display = 'none';///
         });
 
 
