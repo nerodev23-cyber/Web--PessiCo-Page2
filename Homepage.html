@@ -97,6 +97,22 @@ body {
   outline: none;
 }
 
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: 0.3s;
+}
+
+.form-group select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 5px rgba(102, 126, 234, 0.5);
+  outline: none;
+}
+
+
 .btn-submit {
   width: 100%;
   padding: 14px;
@@ -149,7 +165,7 @@ body {
         <input type="text" id="fullname" name="fullname" placeholder="Enter your full name" required>
     </div>
 
-    <div class="form-group">
+    <!-- <div class="form-group">
         <label for="username">User</label>
         <input type="text" id="username" name="username" placeholder="Enter your username" required>
     </div>
@@ -157,17 +173,44 @@ body {
     <div class="form-group">
         <label for="password">Password</label>
         <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="new-password" required>
-    </div>
+    </div> -->
+       
+<div class="form-group">
+    <label for="username">User</label>
+    <input type="text" id="username" name="username" placeholder="Enter your username" required>
+    <small id="usernameError" style="color: red; display:none;"></small>
+</div>
 
-    <div class="form-group">
+<div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="new-password" required>
+    <small id="passwordError" style="color: red; display:none;"></small>
+</div>
+
+    <!-- <div class="form-group">
         <label for="phone">Phone</label>
         <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
-    </div>
+    </div> -->
+<div class="form-group">
+    <label for="phone">Phone</label>
+    <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+    <small id="phoneError" style="color: red; display:none;"></small>
+</div>
+    
 
     <div class="form-group">
         <label for="supplier_name">Supplier's Name</label>
         <input type="text" id="supplier_name" name="supplier_name" placeholder="Enter your Supplier's Name or None">
     </div>
+
+      <div class="form-group">
+  <label for="department">Department</label>
+  <select id="department" name="department" required>
+    <option value="">-- เลือกแผนกที่ต้องการติดต่อ --</option>
+    <option value="Warehouse">Warehouse</option>
+    <option value="Stock">Stock</option>
+  </select>
+</div>
 
     <button type="submit" class="btn-submit" id="btnRegisUser">Register</button>
 

@@ -3,12 +3,14 @@ const modal = document.getElementById('modalAddData');
 const openModalBtn = document.getElementById('openModalBtn');
 const closeModalBtn = document.getElementById('closeModalBtn');
 const supplierInput = document.getElementById('supplierName');
-
+const logoutid = document.getElementById('logoutid');
 
 //    <!-- Modal สำหรับ Get Data API -->
-  const apiModal = document.getElementById("apiModal");
-  const openApiBtn = document.getElementById("GetDataByAPI");
-  const closeApiModal = document.getElementById("closeApiModal");
+const apiModal = document.getElementById("apiModal");
+const btnViewRegisteredData = document.getElementById("btnViewRegisteredData");
+const closeApiModal = document.getElementById("closeApiModal");
+const btnViewPendingOrders = document.getElementById("btnViewPendingOrders");
+
 
 
 // การแสดงผล เวลา 
@@ -22,15 +24,45 @@ const addDatabase = document.getElementById('addDatabase');
 const dataForm = document.getElementById('dataForm');
 const dataTableBody = document.querySelector('#dataTable tbody');
 
+const typecar = document.getElementById('typecar');
+const rearPlate = document.getElementById('RearPlate');
+
+typecar.addEventListener('change', function() {
+    if (typecar.value === 'รถสิบล้อ') {
+        rearPlate.value = "-";   // ใส่ค่า "-"
+        rearPlate.readOnly = true; // ทำให้แก้ไขไม่ได้ (optional)
+    } else {
+        rearPlate.value = "";    // ล้างค่า
+        rearPlate.readOnly = false; // ให้แก้ไขได้
+    }
+});
+
+logoutid.addEventListener('click', async () => {
+    const result = await Swal.fire({
+        title: 'คุณต้องการออกจากระบบหรือไม่?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ใช่',
+        cancelButtonText: 'ยกเลิก'
+    });
+
+    if (result.isConfirmed) {
+        sessionStorage.clear();
+        window.location.href = '/Homepage.html';
+    }
+});
+
 
 openModalBtn.onclick = () => {
     const session = JSON.parse(sessionStorage.getItem('userSession'));
     
     if (session && session.supplier) {
-        supplierInput.value = session.supplier; // ✅ ใส่ค่า supplier ลง input
+        supplierInput.value = session.supplier; 
     } else {
         supplierInput.value = ''; // ถ้าไม่มีค่า
     }
+   
+
     modal.style.display = 'block';  // แสดง Model กรอกข้อมูล เมือกดปุ่ม 
 }
 
@@ -46,10 +78,165 @@ window.onclick = (event) => {
 }
 
 
-// Model API
-openApiBtn.addEventListener("click", function () {
+// Model  สำหรับ สำหรับ User ที่จะดูข้อมูลที่ได้ ลงทะเบียน แต่ยังไม่ถูกยอมรับจาก Admin , SuperAdmin
+btnViewRegisteredData.addEventListener("click", async function () {
     apiModal.style.display = "block";
-  });
+
+    const session = JSON.parse(sessionStorage.getItem('userSession'));
+    if (!session || !session.sessionKey) {
+        Swal.fire({ icon: 'error', title: 'Session หมดอายุ' });
+        return;
+    }
+
+     Swal.fire({
+            title: 'กำลังโหลดข้อมูล...',
+            text: 'กรุณารอสักครู่',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+    try {
+        // const response = await fetch('http://localhost:3000/user/get-btnViewRegisteredData', {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify({
+        //         sessionKey: session.sessionKey,
+        //         username: session.username
+        //     })
+        // });
+
+          const response = await fetch('https://server-pepsicola-1.onrender.com/user/get-btnViewRegisteredData', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                sessionKey: session.sessionKey,
+                username: session.username
+            })
+        });
+
+
+        if (!response.ok) throw new Error('Failed to fetch data');
+
+        const result = await response.json();
+
+        const tbody = document.querySelector('#apiDataTable tbody');
+        tbody.innerHTML = ''; // ล้างข้อมูลเก่า
+
+        if (!result.data || result.data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10">ไม่มีข้อมูล</td></tr>';
+            return;
+        }
+
+        result.data.forEach(row => {
+            const tr = document.createElement('tr');
+
+            // เอา index[1] เป็นต้นไป (ไม่เอา id)
+            tr.innerHTML = `
+                <td>${row.NameSupplier || 'N/A'}</td>
+                <td>${row.FullName || 'N/A'}</td>
+                <td>${row.TypeCar || 'N/A'}</td>
+                <td>${row.FrontPlate || 'N/A'}</td>
+                <td>${row.RearPlate || 'N/A'}</td>
+                <td>${row.Product || 'N/A'}</td>
+                <td>${row.department || 'N/A'}</td>
+                <td>${row.Date || 'N/A'}</td>
+                <td>${row.Time || 'N/A'}</td>
+                 <td style="color: orange; font-weight: bold;">รอยอมรับ Order</td>
+
+               
+            `;
+            tbody.appendChild(tr);
+
+            //  <td>
+            //         <button class="btn-accept" data-id="${row.id}" onclick="handleAcceptFromModal(${row.id})">สถานะ</button>
+                    
+            //     </td>
+        });
+
+          Swal.close();
+
+    } catch (err) {
+        console.error('Error fetching regiscar data:', err);
+        Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาดในการโหลดข้อมูล' });
+    }
+});
+
+
+// Model   สำหรับ User ที่จะดูข้อมูลที่ได้ ลงทะเบียน และถูกยอมรับจาก Admin , SuperAdmin
+btnViewPendingOrders.addEventListener("click", async function () {
+    apiModal.style.display = "block";
+
+    const session = JSON.parse(sessionStorage.getItem('userSession'));
+    if (!session || !session.sessionKey) {
+        Swal.fire({ icon: 'error', title: 'Session หมดอายุ' });
+        return;
+    }
+
+    Swal.fire({
+        title: 'กำลังโหลดข้อมูล...',
+        text: 'กรุณารอสักครู่',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        // const response = await fetch('http://localhost:3000/user/get-btnViewPendingOrders', {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify({
+        //         sessionKey: session.sessionKey,
+        //         username: session.username
+        //     })
+        // });
+
+          const response = await fetch('https://server-pepsicola-1.onrender.com/user/get-btnViewPendingOrders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                sessionKey: session.sessionKey,
+                username: session.username
+            })
+        });
+
+
+        if (!response.ok) throw new Error('Failed to fetch data');
+
+        const result = await response.json();
+        Swal.close(); // ปิด Swal หลังโหลดเสร็จ
+
+        const tbody = document.querySelector('#apiDataTable tbody');
+        tbody.innerHTML = '';
+
+        if (!result.data || result.data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10">ไม่มีข้อมูล</td></tr>';
+            return;
+        }
+
+        result.data.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${row.NameSupplier || 'N/A'}</td>
+                <td>${row.FullName || 'N/A'}</td>
+                <td>${row.TypeCar || 'N/A'}</td>
+                <td>${row.FrontPlate || 'N/A'}</td>
+                <td>${row.RearPlate || 'N/A'}</td>
+                <td>${row.Product || 'N/A'}</td>
+                <td>${row.department || 'N/A'}</td>
+                <td>${row.Date || 'N/A'}</td>
+                <td>${row.Time || 'N/A'}</td>
+                <td style="color:orange;">รอดำเนินการชั่ง...</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+    } catch (err) {
+        console.error('Error fetching accepted regiscar data:', err);
+        Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาดในการโหลดข้อมูล' });
+    }
+});
+
 
   closeApiModal.addEventListener("click", function () {
     apiModal.style.display = "none";
@@ -60,8 +247,6 @@ openApiBtn.addEventListener("click", function () {
       apiModal.style.display = "none";
     }
   });
-
-  
 
 
 // การแสดงผล เวลา 
@@ -84,6 +269,7 @@ timeInput.addEventListener('input', () => {
 let dataList = [];
 let editIndex = null;
 
+// กรอกข้อมุ่ล Save5
 dataForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -91,13 +277,33 @@ dataForm.addEventListener('submit', (e) => {
     const subblier = session?.supplier || '';
 
     const fullname = document.getElementById('fullname').value;
-    const carNumber = document.getElementById('carNumber').value;
+    const typecarTwo = document.getElementById('typecar').value
+    const frontPlate = document.getElementById('FrontPlate').value;
+    const rearPlate = document.getElementById('RearPlate').value;
     const product = document.getElementById('product').value;
-    const company = document.getElementById('company').value;
     const weightDate = document.getElementById('weightDate').value;
     const weightTime = document.getElementById('weightTime').value;
 
-    const newData = { subblier, fullname, carNumber, product, company, weightDate, weightTime };
+    const departmentSelect = document.getElementById('department');
+    const department  = departmentSelect.value;  
+
+// เช็คห้ามเลือกวันย้อนหลังและห้ามเลือกวันอนาคต
+const todayStr = new Date().toISOString().split("T")[0]; // yyyy-mm-dd ของวันนี้
+const selectedStr = weightDate; // input date คืนค่า yyyy-mm-dd อยู่แล้ว
+
+if (selectedStr < todayStr) {
+    Swal.fire({
+        icon: 'error',
+        title: 'ไม่สามารถเลือกวันที่นี้ได้',
+        text: 'สามารถเลือกได้เฉพาะวันปัจจุบันและอนาคตเท่านั้น',
+        confirmButtonText: 'ตกลง'
+    });
+    return;
+}
+
+
+
+    const newData = { subblier, fullname, typecarTwo, frontPlate, rearPlate , product, department , weightDate, weightTime};
 
     if (editIndex !== null) {
         // แก้ไขข้อมูลเก่า
@@ -112,7 +318,7 @@ dataForm.addEventListener('submit', (e) => {
     dataForm.reset();
 }
 );
-
+// สำหรับแสดงค่า ตอนที่ มีการเพิ่มข้อมูล
 function renderTable() {
     dataTableBody.innerHTML = ''; // เคลียร์ก่อน
 
@@ -121,13 +327,28 @@ function renderTable() {
         row.innerHTML = `
             <td>${item.subblier}</td>
             <td>${item.fullname}</td>
-            <td>${item.carNumber}</td>
+            <td>${item.typecarTwo}</td>
+            <td>${item.frontPlate}</td>
+             <td>${item.rearPlate}</td>
             <td>${item.product}</td>
-            <td>${item.company}</td>
+            <td>${item.department }</td>
             <td>${item.weightDate}</td>
             <td>${item.weightTime}</td>
-            <td><button class="edit-btn" data-index="${index}">แก้ไข</button></td>
-            <td><button class="copy-btn" data-index="${index}">Copy</button></td>
+
+             <td>
+            <button class="edit-btn" data-index="${index}"
+                    style="background-color: orange; color: white; border: none; padding: 5px 12px; border-radius: 5px; cursor: pointer;">
+                Edit
+            </button>
+            </td>
+
+            <td>
+            <button class="copy-btn" data-index="${index}" 
+                    style="background-color: green; color: white; border: none; padding: 5px 12px; border-radius: 5px; cursor: pointer;">
+                Copy
+            </button>
+            </td>
+
         `;
         dataTableBody.appendChild(row);
     });
@@ -149,15 +370,17 @@ function renderTable() {
     });
 }
 
-// ฟังก์ชันเปิด modal สำหรับแก้ไข
+// ฟังก์ชัน modal สำหรับ แก้ไข
 function openEditModal(index) {
     const item = dataList[index];
 
     // เติมค่าเข้า form
-    document.getElementById('fullname').value = item.fullname;
-    document.getElementById('carNumber').value = item.carNumber;
-    document.getElementById('product').value = item.product;
-    document.getElementById('company').value = item.company;
+    document.getElementById('fullname').value   = item.fullname;
+    document.getElementById('typecar').value    = item.typecarTwo;
+    document.getElementById('FrontPlate').value = item.frontPlate;
+    document.getElementById('RearPlate').value  = item.rearPlate;
+    document.getElementById('product').value    = item.product;
+    document.getElementById('department').value = item.department;  // 👈 เพิ่ม department
     document.getElementById('weightDate').value = item.weightDate;
     document.getElementById('weightTime').value = item.weightTime;
 
@@ -172,10 +395,12 @@ function openCopyModal(index) {
     const item = dataList[index];
 
     // เติมค่าเข้า form
-    document.getElementById('fullname').value = item.fullname;
-    document.getElementById('carNumber').value = item.carNumber;
-    document.getElementById('product').value = item.product;
-    document.getElementById('company').value = item.company;
+    document.getElementById('fullname').value   = item.fullname;
+    document.getElementById('typecar').value    = item.typecarTwo;
+    document.getElementById('FrontPlate').value = item.frontPlate;
+    document.getElementById('RearPlate').value  = item.rearPlate;
+    document.getElementById('product').value    = item.product;
+    document.getElementById('department').value = item.department;  // 👈 เพิ่ม department
     document.getElementById('weightDate').value = item.weightDate;
     document.getElementById('weightTime').value = item.weightTime;
 
@@ -188,41 +413,108 @@ function openCopyModal(index) {
 }
 
 
+
+
+
 addDatabase.addEventListener('click',async() => {
-    if(dataList.length == 0){
-        alert("No data");
+
+   if (dataList.length == 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'ไม่มีข้อมูล',
+            text: 'กรุณาเพิ่มข้อมูลก่อน',
+        });
         return;
     }
+    //
     try{
-        const response = await fetch('https://server-pepsicola-1.onrender.com/addDataMySQL' , {
+
+
+            // 🔹 Confirm ก่อนบันทึก
+    const confirmResult = await Swal.fire({
+        title: 'คุณต้องการบันทึกข้อมูลจริงหรือไม่?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+    });
+
+    if (!confirmResult.isConfirmed) {
+        // ถ้าเลือก No ให้ return เลย
+        return;
+    }
+
+          // 🔹 แสดงโหลด
+        Swal.fire({
+            title: 'กำลังบันทึก...',
+            text: 'กรุณารอสักครู่',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // const response = await fetch('https://server-pepsicola-1.onrender.com/addDataMySQL' , {
+
+        const session = JSON.parse(sessionStorage.getItem('userSession'));
+
+        //  const response = await fetch('http://localhost:3000/addDataMySQL' , {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //   // body: JSON.stringify(dataList )
+        //     body: JSON.stringify({
+        //     dataList: dataList,
+        //     sessionKey: session.sessionKey,
+        //     username: session.username
+        //     })
+        // })
+
+          const response = await fetch('https://server-pepsicola-1.onrender.com/addDataMySQL' , {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-           body: JSON.stringify(dataList)
+          // body: JSON.stringify(dataList )
+            body: JSON.stringify({
+            dataList: dataList,
+            sessionKey: session.sessionKey,
+            username: session.username
+            })
         })
 
         if (response.status !== 200) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-          const result = await response.json();
-        alert("Data saved successfully!");
-        console.log("Server Response:", result);
+         const result = await response.json();
+
+          Swal.fire({
+            icon: 'success',
+            title: 'บันทึกสำเร็จ',
+            text: 'ข้อมูลถูกบันทึกเรียบร้อยแล้ว',
+            timer: 2000,
+            showConfirmButton: false
+        });
 
         // ล้างข้อมูลหลังบันทึกสำเร็จ
         dataList = [];
         renderTable();
-        debugger;
+        
 
     }catch(err){
           console.error('Error:', err);
-        alert('ไม่สามารถเชื่อมต่อ API ได้');
+           Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: 'ไม่สามารถเชื่อมต่อ API ได้',
+        });
     }
 })
 
 
-// ✅ DOMContentLoaded เหลือแค่ session check และ initial load
+// ✅ DOMContentLoaded  session check และ initial load
 document.addEventListener('DOMContentLoaded', async () => {
     const session = JSON.parse(sessionStorage.getItem('userSession'));
     
@@ -232,7 +524,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    console.log('ยินดีต้อนรับ admin:', session.username);
+     if (session && session.username) {
+        const usernameadmin = document.getElementById('usernameadmin');
+        usernameadmin.innerHTML = `ข้อมูลผู้ใช้งานระบบ : <span style="color: green;">${session.username}</span>`;
+    }
+
+    console.log('ยินดีต้อนรับ user:', session.username);
+    
+    
 
     // ตรวจสอบ session หมดอายุทุกวินาที
     setInterval(() => {

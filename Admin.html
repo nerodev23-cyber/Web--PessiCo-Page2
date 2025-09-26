@@ -47,15 +47,18 @@
             margin-left: 5px;
         }
 
-        .logout-btn {
-            background: #f44336;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            float: right;
-        }
+.logout-btn {
+    background: #f44336;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;        /* ปรับมุมให้สวยขึ้น */
+}
 
+.logout-btn:hover {
+    background-color: #c0392b; /* สีแดงเข้มเมื่อ hover */
+}
         /* Search input */
         .search-container {
             margin-bottom: 20px;
@@ -83,15 +86,113 @@
             width: 100%;
             z-index: 1000;
         }
+
+        .search-btn, .fetch-btn , .btnaddAdmin{
+    padding: 8px 14px;
+    margin-left: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+}
+
+.fetch-btn {
+    background-color: #28a745; /* เขียวให้ต่างจากปุ่มค้นหา */
+}
+
+.btnaddAdmin {
+    background-color: orange; /* เขียวให้ต่างจากปุ่มค้นหา */
+    color: black;
+}
+
+#apiModal {
+  display: none; /* ซ่อน modal */
+}
+
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.5);
+    transition: 0.3s;
+}
+.modal-content {
+    background-color: #fff;
+    margin: 8% auto; 
+    padding: 25px 30px;
+    border-radius: 10px;
+    width: 350px;
+    max-width: 90%;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+}
+.api-modal-content {
+  width: 95%;
+  height: 90%;      /* ความสูงสูงสุดของ modal */
+  max-width: 95%;
+  max-height: 90%;
+  margin: 2% auto;
+  overflow-y: auto; /* ✅ ทำให้ scroll เมื่อเนื้อหาเกิน */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* ปุ่มปิด modal */
+.close {
+    position: absolute;
+    top: 15px;       /* ระยะจากขอบบน */
+    right: 20px;     /* ระยะจากขอบขวา */
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close:hover {
+    color: red; /* เปลี่ยนสีเวลา hover */
+}
+
+
     </style>
 </head>
 <body class="body-container">
-    <button class="logout-btn">ออกจากระบบ</button>
-    <!-- ช่องค้นหา -->
-    <div class="search-container">
-        <input type="text" class="search-input" placeholder="ค้นหาผู้ใช้...">
-        <button class="search-btn">ค้นหา</button>
+
+
+    <!-- ช่องค้นหา + โลโก้/ข้อความ -->
+<div class="search-container" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+
+    <!-- โลโก้ + ข้อความ + ปุ่ม อยู่แถวเดียวกัน -->
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="tsc512.jpg" alt="Logo" style="height: 100px;">
+
+        <div style="display: flex; flex-direction: column;">
+            <h2 id="usernameadmin" style="margin: 0;">ข้อมูลผู้ใช้งานระบบ</h2>
+            <span style="font-size: 14px; color: #555;">แสดงข้อมูลเฉพาะแผนกเท่านั้น</span>
+        </div>
+
+                <h2 id="userInfo" style="margin: 0; flex-grow: 1; text-align: center;">ข้อมูลผู้ใช้งานระบบ :</h2>
+
+
+        <!-- ปุ่มชิดขวาและอยู่ระดับเดียวกับโลโก้ -->
+        <button class="logout-btn" id="logoutadmin" style="margin-left: auto;">ออกจากระบบ</button>
     </div>
+
+    <!-- ช่องค้นหา + ปุ่ม -->
+    <div style="display: flex; gap: 10px;">
+        <input type="text" class="search-input" placeholder="ค้นหา User...">
+        <button class="search-btn">ค้นหา</button>
+        <button class="fetch-btn">Order ที่มีการเข้าชั่งวันนี้</button>
+       <button class="btnaddAdmin" id="btnaddAdmin" style="display:none;">เพิ่มข้อมูล Admin</button>
+
+    </div>
+</div>
+
 
     <table class="data-table">
         <thead>
@@ -101,27 +202,18 @@
                 <th>Password</th>
                 <th>Phone</th>
                 <th>Supplier Name</th>
+                <th>Department</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>John Doe</td>
-                <td>johnd</td>
-                <td>12345</td>
-                <td>0800000000</td>
-                <td>ABC Supplier</td>
-                <td>
-                    <button class="btn-accept">ยอมรับ</button>
-                    <button class="btn-reject">ไม่ยอมรับ</button>
-                </td>
-            </tr>
             <tr>
                 <td>Jane Smith</td>
                 <td>janes</td>
                 <td>abcde</td>
                 <td>0811111111</td>
                 <td>XYZ Supplier</td>
+                 <td>แผนก</td>
                 <td>
                     <button class="btn-accept">ยอมรับ</button>
                     <button class="btn-reject">ไม่ยอมรับ</button>
@@ -130,238 +222,87 @@
         </tbody>
     </table>
 
- <script>
-    const searchInput = document.querySelector('.search-input');
-    const searchBtn = document.querySelector('.search-btn');
-    const tableBody = document.querySelector('.data-table tbody');
-    
-    // ฟังก์ชันกรองตาราง
-    function filterTable() {
-        const filter = searchInput.value.toLowerCase();
-        const rows = tableBody.getElementsByTagName('tr');
-        
-        for (let row of rows) {
-            const cells = row.getElementsByTagName('td');
-            let match = false;
-            for (let i = 0; i < cells.length - 1; i++) { // ไม่ตรวจ Action column
-                if (cells[i].innerText.toLowerCase().includes(filter)) {
-                    match = true;
-                    break;
-                }
-            }
-            row.style.display = match ? '' : 'none';
-        }
-    }
-    
-  /*  
-document.addEventListener('DOMContentLoaded', () => {
-    const session = JSON.parse(sessionStorage.getItem('userSession'));
-    
-    if (!session || !session.sessionKey) {
-        alert('กรุณาเข้าสู่ระบบก่อน');
-        window.location.href = '/page/Homepage.html';
-        return;
-    }
 
-    console.log('ยินดีต้อนรับ admin:', session.username);
+    <!-- Modal สำหรับแสดงข้อมูล API -->
+<div id="apiModal" class="modal">
+  <div class="modal-content api-modal-content">
+    <span class="close" id="closeApiModal">&times;</span>
+    <h3>Order ที่มีการเข้าชั่งวันนี้</h3>
+    <table id="apiDataTable" class="data-table">
+      <thead>
+        <tr>
+          <th>ชื่อ Supplier</th>
+        <th>ชื่อ นามสกุล</th>
+        <th>ชนิดรถ</th>
+        <th>ทะเบียนรถ</th>
+        <th>ทะเบียนรถ ท้าย</th>
+        <th>สินค้า</th>
+        <th>แผนกที่ต้องการติดต่อ</th>
+        <th>วันที่ที่จะเข้าชั่ง</th>
+        <th>เวลาที่จะเข้าชั่ง</th>
+        <th>id_user</th>
+        <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="orderList">
+        <tr>
+          <td colspan="8">กำลังโหลดข้อมูล...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-    //  ตรวจสอบ session หมดอายุทุกวินาที (ไม่ต้องเรียก server)
-    setInterval(() => {
-        const currentSession = JSON.parse(sessionStorage.getItem('userSession'));
-        
-        if (!currentSession || Date.now() > currentSession.expireTime) {
-            alert('Session หมดอายุ กรุณาเข้าสู่ระบบใหม่');
-            sessionStorage.removeItem('userSession');
-            window.location.href = '/page/Homepage.html';
-        }
-    }, 1000);
-});
-  */  
+<!-- <div id="adminModal" class="modal" style="display:none;">
+  <div class="modal-content" style="background:#fff; padding:20px; border-radius:8px; width:300px; margin:auto;">
+    <h3>เพิ่มข้อมูล Admin</h3>
+    <form id="adminForm">
+      <input type="text" id="username" placeholder="Username" required><br><br>
+      <input type="password" id="password" placeholder="Password" required><br><br>
+      <input type="email" id="email" placeholder="Email" required><br><br>
+      <input type="text" id="department" placeholder="Department" required><br><br>
+      <button type="submit">บันทึก</button>
+      <button type="button" id="closeModal">ยกเลิก</button>
+    </form>
+  </div>
+</div> -->
 
-  // ✅ ย้าย loadRegiscarData ออกมาข้างนอก (Global Scope)
-async function loadRegiscarData() {
-    try {
-        const session = JSON.parse(sessionStorage.getItem('userSession'));
-        
-        const response = await fetch('https://server-pepsicola-1.onrender.com/api/get-regiscar-data', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionKey: session.sessionKey })
-        });
+<div id="adminModal" class="modal" style="display:none;">
+  <div class="modal-content" style="background:#fff; padding:20px; border-radius:8px; width:300px; margin:auto;">
+    <h3>เพิ่มข้อมูล Admin</h3>
+    <form id="adminForm">
+      <label>Username</label>
+      <input type="text" id="username" placeholder="Username" required><br><br>
 
-        if (!response.ok) {
-            if (response.status === 401) {
-                alert('Session หมดอายุ กรุณาเข้าสู่ระบบใหม่');
-                sessionStorage.removeItem('userSession');
-                window.location.href = '/Homepage.html';
-                return;
-            }
-            throw new Error('Failed to fetch data');
-        }
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Password" required><br><br>
 
-        const result = await response.json();
-        displayData(result.data);
+<label>Type</label>
+<select id="userType" required>
+  <option value="">-- เลือกประเภท --</option>
+  <option value="admin">Admin</option>
+  <option value="superadmin">Superadmin</option>
+</select><br><br>
 
-    } catch (err) {
-        console.error('Error loading data:', err);
-        alert('เกิดข้อผิดพลาดในการโหลดข้อมูล');
-    }
-}
-
-// ✅ ย้าย displayData ออกมาข้างนอกด้วย
-function displayData(data) {
-    console.log('Displaying data:', data);
-
-    const tbody = document.querySelector('.data-table tbody');
-    if (!tbody) {
-        console.error('Table not found!');
-        return;
-    }
-    
-    tbody.innerHTML = ''; // ล้างข้อมูลเก่า
-
-    if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6">ไม่มีข้อมูล</td></tr>';
-        return;
-    }
-
-   data.forEach(row => {
-        const tr = document.createElement('tr');
-        
-        // ✅ สร้าง userData object สำหรับส่งไปยัง handleAccept
-        const userDataForAccept = {
-            username: row.username,
-            password_hash: row.password_hash,
-            supplier_name: row.supplier_name
-        };
-
-        tr.innerHTML = `
-            <td>${row.full_name || 'N/A'}</td>
-            <td>${row.username || 'N/A'}</td>
-            <td>${row.password_hash || 'N/A'}</td>
-            <td>${row.phone || 'N/A'}</td>
-            <td>${row.supplier_name || 'N/A'}</td>
-            <td>
-                <button class="btn-accept" onclick="handleAccept(${JSON.stringify(userDataForAccept).replace(/"/g, '&quot;')})">ยอมรับ</button>
-                <button class="btn-reject" onclick="handleReject('${row.username}')">ไม่ยอมรับ</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-// ✅ ฟังก์ชัน handleReject ใช้งานได้แล้ว
-async function handleReject(username) {
-    if (!confirm(`คุณต้องการปฏิเสธและลบ ${username} หรือไม่?`)) {
-        return;
-    }
-
-    try {
-        const session = JSON.parse(sessionStorage.getItem('userSession'));
-        
-        const response = await fetch('https://server-pepsicola-1.onrender.com/api/reject-user', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                sessionKey: session.sessionKey,
-                username: username 
-            })
-        });
-
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-            alert(result.message);
-            
-            // ✅ ตอนนี้ loadRegiscarData() เรียกได้แล้ว!
-            await loadRegiscarData();
-            
-        } else {
-            alert(result.message || 'เกิดข้อผิดพลาด');
-        }
-
-    } catch (err) {
-        console.error('Error rejecting user:', err);
-        alert('เกิดข้อผิดพลาดในการลบ User');
-    }
-}
-
-// ✅ ฟังก์ชัน handleAccept
-async function handleAccept(username) {
-    if (!confirm(`คุณต้องการยอมรับ ${username} หรือไม่?`)) {
-        return;
-    }
-    
-    console.log('Accept user:', username);
-    alert(`ยอมรับ ${username} แล้ว (ฟีเจอร์ยังไม่พร้อม)`);
-}
-
-// ✅ DOMContentLoaded เหลือแค่ session check และ initial load
-document.addEventListener('DOMContentLoaded', async () => {
-    const session = JSON.parse(sessionStorage.getItem('userSession'));
-    
-    if (!session || !session.sessionKey) {
-        alert('กรุณาเข้าสู่ระบบก่อน');
-        window.location.href = '/Homepage.html';
-        return;
-    }
-
-    console.log('ยินดีต้อนรับ admin:', session.username);
-
-    // ตรวจสอบ session หมดอายุทุกวินาที
-    setInterval(() => {
-        const currentSession = JSON.parse(sessionStorage.getItem('userSession'));
-        
-        if (!currentSession || Date.now() > currentSession.expireTime) {
-            alert('Session หมดอายุ กรุณาเข้าสู่ระบบใหม่');
-            sessionStorage.removeItem('userSession');
-            window.location.href = '/Homepage.html';
-        }
-    }, 1000);
-
-    // ✅ โหลดข้อมูลครั้งแรก
-    await loadRegiscarData();
-});
+<label>Department</label>
+<input type="text" id="departmentInput" placeholder="Department" style="display:none;" readonly required><br>
+<select id="departmentSelect" style="display:none;">
+  <option value="">-- เลือก Department --</option>
+  <option value="Warehouse">Warehouse</option>
+  <option value="Stock">Stock</option>
+</select><br><br>
 
 
+      <button type="button" id="btnSaveAdmin">บันทึก</button>
 
-// ✅ ปรับปรุง handleAccept ให้รับ userData object
-async function handleAccept(userData) {
-    if (!confirm(`คุณต้องการยอมรับ ${userData.username} หรือไม่?`)) {
-        return;
-    }
-
-    try {
-        const session = JSON.parse(sessionStorage.getItem('userSession'));
-        
-        const response = await fetch('https://server-pepsicola-1.onrender.com/api/accept-user', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                sessionKey: session.sessionKey,
-                userData: userData  // ส่ง userData object ทั้งหมด
-            })
-        });
-
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-            alert(result.message);
-            
-            // ✅ รีเฟรชข้อมูลในตารางใหม่
-            await loadRegiscarData();
-            
-        } else {
-            alert(result.message || 'เกิดข้อผิดพลาด');
-        }
-
-    } catch (err) {
-        console.error('Error accepting user:', err);
-        alert('เกิดข้อผิดพลาดในการยอมรับ User');
-    }
-}
+      <button type="button" id="closeModal">ยกเลิก</button>
+    </form>
+  </div>
+</div>
 
 
-</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="Admin.js"></script>
+
 </body>
 </html>

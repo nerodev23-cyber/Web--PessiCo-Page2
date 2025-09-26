@@ -13,7 +13,6 @@
 }
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f6f8;
     color: #333;
     padding: 20px;
 }
@@ -44,18 +43,18 @@ button:hover {
 table {
     border-collapse: collapse;
     width: 100%;
-    background-color: #fff;
-    border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 th, td {
     padding: 12px 15px;
     text-align: left;
+    border: 1px solid #ddd;  /* ✅ เพิ่มเส้นกรอบเหมือน Admin */
 }
-thead {
-    background-color: #FEFEF7;
+thead th {
+    background-color: #f2f2f2; /* ✅ สีเทาอ่อนเหมือน Admin.html */
     color: black;
+    font-weight: bold;
 }
 tbody tr:nth-child(even) {
     background-color: #f9f9f9;
@@ -63,6 +62,7 @@ tbody tr:nth-child(even) {
 tbody tr:hover {
     background-color: #eaf1fb;
 }
+
 
 /* Modal style */
 .modal {
@@ -140,11 +140,6 @@ h3 {
     text-align: center;
 }
 
-.openModalBtn {
-   margin-bottom: 20px;
-   margin-left: 30px;
-}
-
 
 
 input[type="radio"] {
@@ -174,6 +169,111 @@ input[type="radio"] {
     background-color: darkorange; /* สีเข้มขึ้นเวลา hover */
 }
 
+/* ให้ select เหมือนกับ input */
+select#typecar {
+    width: 100%;
+    padding: 10px 12px;
+    margin: 5px 0 15px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: 0.3s;
+    font-size: 14px; /* เพิ่มให้ตัวอักษรขนาดเท่ากัน */
+}
+
+select#typecar:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 5px rgba(52,152,219,0.4);
+}
+
+
+
+
+
+
+
+
+
+
+/* แถวค้นหา + ปุ่ม */
+.search-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Input ค้นหา + ปุ่ม */
+.search-row .search-input,
+.search-row button {
+    height: 36px;
+    padding: 0 15px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+/* Input ค้นหาแตกต่างนิดหน่อย */
+.search-row .search-input {
+    flex: 1;
+    max-width: 250px;
+    background-color: #fff;
+    color: #333;
+}
+
+/* ปุ่มสีพื้นฐาน */
+.search-row button {
+    color: white;
+    min-width: 120px;
+}
+
+/* ปุ่ม hover */
+.search-row button:hover {
+    background-color: #808080;
+}
+
+
+
+/* ปุ่มเพิ่มข้อมูลเป็นสีฟ้า */
+#openModalBtn {
+    background-color: #3498db; /* สีน้ำเงิน */
+    color: white;
+    border: 1px solid #3498db;
+}
+
+#openModalBtn:hover {
+    background-color: #217dbb; /* สีน้ำเงินเข้มเมื่อ hover */
+    border-color: #217dbb;
+}
+
+
+/* ปุ่มเพิ่มฐานข้อมูลเป็นสีเขียว */
+#addDatabase {
+    background-color: #28a745; /* สีเขียว */
+    color: white;
+    border: 1px solid #28a745;
+}
+
+#addDatabase:hover {
+    background-color: #218838; /* สีเขียวเข้มเมื่อ hover */
+    border-color: #218838;
+}
+.logout-btn {
+    background-color: #e74c3c; /* สีแดงสด */
+    color: #fff;               /* ตัวอักษรสีขาว */
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+    background-color: #c0392b; /* สีแดงเข้มเมื่อ hover */
+}
+
+
 
 /* Animation */
 @keyframes slideIn {
@@ -186,13 +286,37 @@ input[type="radio"] {
 </head>
 <body>
 
-    <h2>ข้อมูลการเข้าชั่ง</h2>
+
+
+<div class="search-container" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+
+    <!-- โลโก้ + ข้อความ + ปุ่ม อยู่แถวเดียวกัน -->
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="tsc512.jpg" alt="Logo" style="height: 100px;">
+
+        <div style="display: flex; flex-direction: column;">
+            <h2 id="usernameadmin" style="margin: 0;">ข้อมูลผู้ใช้งานระบบ</h2>
+            <span style="font-size: 14px; color: #555;">ลงทะเบียนรถล่วงหน้าเพื่อเอารถเข้าชั่ง</span>
+        </div>
+
+                <!-- <h2 id="userInfo" style="margin: 0; flex-grow: 1; text-align: center;">ข้อมูลผู้ใช้งานระบบ :</h2> -->
+
+        <!-- ปุ่มชิดขวาและอยู่ระดับเดียวกับโลโก้ -->
+        <button class="logout-btn" id="logoutid" style="margin-left: auto;">ออกจากระบบ</button>
+    </div>
+
+<div class="search-row">
+    <!-- <input type="text" class="search-input" placeholder="ค้นหาผู้ใช้...">
+    <button class="search-btn">ค้นหา</button> -->
+    <!-- <button class="fetch-btn">Order วันนี้</button> -->
     <button class="openModalBtn" id="openModalBtn">เพิ่มข้อมูล</button>
+    <button class="openModalBtn" id="addDatabase">บันทึกรายการทั้งหมดที่จะชั่งเข้า</button>
+    <button class="openModalBtn" id="btnViewRegisteredData">ประวิตข้อมูลที่ลงทะเบียน</button>
+     <button class="" id="btnViewPendingOrders">ประวัติข้อมูลรอเข้าชั่ง</button>
 
-        <button class="openModalBtn" id="addDatabase">เพิ่มข้อมูลฐานข้อมูล</button>
+</div>
 
-
-      <button class="openModalBtn" id="GetDataByAPI">Get Data API</button>
+</div>
 
     <!-- Modal Form -->
     <div id="modalAddData" class="modal">
@@ -201,28 +325,52 @@ input[type="radio"] {
             <h3>กรอกข้อมูล</h3>
             <form id="dataForm">
 
-
-                 <div id="supplierInputContainer" ">
+                 <div id="supplierInputContainer">
                     <label>กรอกชื่อ Supplier:</label><br>
-                    <input type="text" id="supplierName" readonly><br><br>
+                    <input type="text" id="supplierName" readonly><br>
                 </div>
 
-                <label>ชื่อ นามสกุล:</label><br>
-                <input type="text" id="fullname" required><br><br>
+                <label>ชื่อ คนขับรถ :</label><br>
+                <input type="text" id="fullname" required><br>
 
-                <label>ทะเบียนรถ:</label><br>
-                <input type="text" id="carNumber" required><br><br>
+                 <label>ประเภทรถ :</label><br>
+                <select id="typecar" required>
+                    <option value="">-- เลือกประเภทรถ --</option>
+                    <option value="รถพ่วง">รถพ่วง</option>
+                    <option value="รถสิบล้อ">รถสิบล้อ</option>
+                </select><br><br>
 
-                <label>สินค้า:</label><br>
-                <input type="text" id="product" required><br><br>
 
-                 <label>บริษัท:</label><br>
-                <input type="text" id="company" required><br><br>
+                <label>ทะเบียนรถ-หัว :</label><br>
+                <input type="text" id="FrontPlate" required><br>
 
-                <label>วันที่จะเข้าชั่ง:</label><br>
-                <input type="date" id="weightDate" required><br><br>
+                  <label>ทะเบียนรถ-ท้าย :</label><br>
+                <input type="text" id="RearPlate" required><br>
 
-                 <label>เวลาที่จะเข้าชั่ง:</label><br>
+
+                <label>สินค้า :</label><br>
+                <input type="text" id="product" required><br>
+
+                 <!-- <label>แผนกที่ต้องการติดต่อ :</label><br>
+                 <input type="text" id="department" readonly><br><br> -->
+
+               
+<div class="form-group">
+    <label for="department">แผนกที่ต้องการติดต่อ</label>
+    <select id="department" name="department" required style="width:100%; padding:5px; font-size:16px; border-radius:5px;">
+        <option value="">-- เลือกแผนกที่ต้องการติดต่อ --</option>
+        <option value="Warehouse">Warehouse</option>
+        <option value="Stock">Stock</option>
+    </select>
+</div> <br>
+
+
+
+                
+                <label>วันที่จะเข้าชั่ง :</label><br>
+                <input type="date" id="weightDate" required><br>
+
+                 <label>เวลาที่จะเข้าชั่ง :</label><br>
                 <input type="time" id="weightTime" required><br><br>
                 <span id="thaiTime" style="font-weight:bold; color:black;"></span><br><br>
 
@@ -232,41 +380,17 @@ input[type="radio"] {
         </div>
     </div>
 
-    <!-- 🔥 Modal สำหรับ Get Data API -->
-<div id="apiModal" class="modal">
-  <div class="modal-content api-modal-content">
-    <span class="close" id="closeApiModal">&times;</span>
-    <h3>ข้อมูลจาก API</h3>
-    <table id="apiDataTable">
-      <thead>
-        <tr>
-          <th>ชื่อ Supplier</th>
-          <th>ชื่อ นามสกุล</th>
-          <th>ทะเบียนรถ</th>
-          <th>สินค้า</th>
-          <th>บริษัท</th>
-          <th>วันที่ที่จะเข้าชั่ง</th>
-          <th>เวลาที่จะเข้าชั่ง</th>
-          <th>แก้ไข</th>
-          <th>Copy</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- ✅ API Data จะแสดงตรงนี้ -->
-      </tbody>
-    </table>
-  </div>
-</div>
-
     <!-- ตารางแสดงข้อมูล -->
     <table id="dataTable">
         <thead>
             <tr>
                 <th>ชื่อ Supplier</th>
                 <th>ชื่อ นามสกุล</th>
+                <th>ชนิดรถ</th>
                 <th>ทะเบียนรถ</th>
+                 <th>ทะเบียนรถ ท้าย</th>
                 <th>สินค้า</th>
-                <th>บริษัท</th>
+                <th>แผนกที่ต้องการติดต่อ</th>
                 <th>วันที่ที่จะเข้าชั่ง</th>
                 <th>เวลาที่จะเข้าชั่ง</th>
                  <th>แก้ไข</th>
@@ -277,6 +401,33 @@ input[type="radio"] {
             <!-- ข้อมูลจะแสดงที่นี่ -->
         </tbody>
     </table>
+
+    <!-- 🔥 Modal สำหรับ Get Data API -->
+<div id="apiModal" class="modal">
+  <div class="modal-content api-modal-content">
+    <span class="close" id="closeApiModal">&times;</span>
+    <h3>ดูประวิตข้อมูลที่เคยลงทะเบียนชั่ง</h3>
+    <table id="apiDataTable">
+      <thead>
+        <tr>
+          <th>ชื่อ Supplier</th>
+          <th>ชื่อ นามสกุล</th>
+          <th>ชนิดรถ</th>
+          <th>ทะเบียนรถ-หน้า</th>
+          <th>ทะเบียนรถ-ท้าย</th>
+          <th>สินค้า</th>
+          <th>แผนกที่ติดต่อ</th>
+          <th>วันที่ที่จะเข้าชั่ง</th>
+          <th>เวลาที่จะเข้าชั่ง</th>
+          <th>สถานะ</th>        
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="RegisWeigh.js"></script>
 </body>
