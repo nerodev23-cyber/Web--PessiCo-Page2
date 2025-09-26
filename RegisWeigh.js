@@ -121,11 +121,13 @@ btnViewRegisteredData.addEventListener("click", async function () {
 
         const result = await response.json();
 
+
         const tbody = document.querySelector('#apiDataTable tbody');
         tbody.innerHTML = ''; // ล้างข้อมูลเก่า
 
         if (!result.data || result.data.length === 0) {
             tbody.innerHTML = '<tr><td colspan="10">ไม่มีข้อมูล</td></tr>';
+             Swal.close(); 
             return;
         }
 
