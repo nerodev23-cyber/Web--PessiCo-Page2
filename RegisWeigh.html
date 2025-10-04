@@ -314,6 +314,14 @@ select#typecar:focus {
     <button class="openModalBtn" id="btnViewRegisteredData">ประวิตข้อมูลที่ลงทะเบียน</button>
      <button class="" id="btnViewPendingOrders">ประวัติข้อมูลรอเข้าชั่ง</button>
 
+      <div class="button-container">
+        <button class="openModalBtn" id="openModalBtn">เพิ่มข้อมูล</button>
+        <label for="excelFileInput" class="file-input-label">
+            📊 Import Excel
+        </label>
+        <input type="file" id="excelFileInput" accept=".xlsx, .xls" />
+    </div>
+
 </div>
 
 </div>
@@ -428,7 +436,8 @@ select#typecar:focus {
   </div>
 </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="RegisWeigh.js"></script>
 </body>
 </html>
