@@ -5,6 +5,9 @@ const closeModalBtn = document.getElementById('closeModalBtn');
 const supplierInput = document.getElementById('supplierName');
 const logoutid = document.getElementById('logoutid');
 
+// สำหรับ import Expce 
+const excelFileInput = document.getElementById('excelFileInput');
+
 //    <!-- Modal สำหรับ Get Data API -->
 const apiModal = document.getElementById("apiModal");
 const btnViewRegisteredData = document.getElementById("btnViewRegisteredData");
@@ -143,7 +146,8 @@ btnViewRegisteredData.addEventListener("click", async function () {
                 <td>${row.RearPlate || 'N/A'}</td>
                 <td>${row.Product || 'N/A'}</td>
                 <td>${row.department || 'N/A'}</td>
-                <td>${row.Date || 'N/A'}</td>
+                 <!-- <td>${row.Date || 'N/A'}</td> -->
+                 <td>${row.Date ? new Date(row.Date).toISOString().split('T')[0] : 'N/A'}</td>
                 <td>${row.Time || 'N/A'}</td>
                  <td style="color: orange; font-weight: bold;">รอยอมรับ Order</td>
 
@@ -226,7 +230,8 @@ btnViewPendingOrders.addEventListener("click", async function () {
                 <td>${row.RearPlate || 'N/A'}</td>
                 <td>${row.Product || 'N/A'}</td>
                 <td>${row.department || 'N/A'}</td>
-                <td>${row.Date || 'N/A'}</td>
+                 <!-- <td>${row.Date || 'N/A'}</td> -->
+                  <td>${row.Date ? new Date(row.Date).toISOString().split('T')[0] : 'N/A'}</td>
                 <td>${row.Time || 'N/A'}</td>
                 <td style="color:orange;">รอดำเนินการชั่ง...</td>
             `;
@@ -320,6 +325,141 @@ if (selectedStr < todayStr) {
     dataForm.reset();
 }
 );
+
+
+// impotr Excel
+        // ฟังก์ชัน Import Excel
+        excelFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            debugger
+            reader.onload = (event) => {
+                try {
+                    const data = new Uint8Array(event.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    // อ่านจาก Sheet แรก
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    //const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                    // สำหรับลบ ช่องว่างจากหัวตาราง Excel
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { defval: '', raw: false }).map(row => {
+                    const cleanedRow = {};
+                    Object.keys(row).forEach(key => {
+                        const cleanKey = key.trim();             // 🔹 ลบช่องว่างหัว-ท้าย header
+                        cleanedRow[cleanKey] = String(row[key]).trim(); // 🔹 ลบช่องว่างในค่าด้วย
+                    });
+                    return cleanedRow;
+                });
+
+
+                    console.log('ข้อมูลแถวแรก:', jsonData[0]);
+                    console.log('ชื่อคอลัมน์ทั้งหมด:', Object.keys(jsonData[0]));
+
+                    if (jsonData.length === 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'ไม่พบข้อมูล',
+                            text: 'ไฟล์ Excel ไม่มีข้อมูล',
+                            confirmButtonText: 'ตกลง'
+                        });
+                        return;
+                    }
+
+                    // แปลงข้อมูล Excel เป็นรูปแบบที่ใช้ในระบบ
+                    const session = JSON.parse(sessionStorage.getItem('userSession') || '{}');  // เอามาทำไม ? เช็คเพื่ออะไร ควรลบ
+                    const importedData = jsonData.map(row => {
+                        // แปลง Serial Date ของ Excel เป็น Date ถ้าจำเป็น
+
+                        
+                        let weightDate = row['วันที่จะเข้าชั่ง'] || row['WeightDate'] || row['WeightDate(วัน/เดือน/ปี ค.ศ.)']  || '';
+                      if (weightDate) {
+                    const parts = weightDate.split(/\/|-/); // แยกเดือน/วัน/ปี หรือ - ได้
+                    if (parts.length === 3) {
+                        // Excel ให้ MM/DD/YY → แปลงเป็น DD/MM/YYYY
+                        let day = parts[1];    // DD
+                        let month = parts[0];  // MM
+                        let year = parts[2];   // YY หรือ YYYY
+                        if (year.length === 2) { year = '20' + year; } // ถ้าเป็น YY แปลงเป็น 20YY
+                        weightDate = `${day}/${month}/${year}`;
+                    }
+                }
+                        
+
+                          // ⭐ จัดการ Department - เพิ่มส่วนนี้
+                        let department = row['แผนกที่ต้องการติดต่อ'] || row['Department'] || row['department'] || '';
+                        
+                        if (department) {
+                            department = String(department).trim();
+                            const validDepartments = ['Warehouse', 'Stock'];
+                            
+                            // ตรวจสอบแบบไม่สนใจตัวพิมพ์ใหญ่-เล็ก
+                            const foundDept = validDepartments.find(d => 
+                                d.toLowerCase() === department.toLowerCase()
+                            );
+                            
+                            if (foundDept) {
+                                department = foundDept;
+                            } else {
+                                console.warn(`แถว ${index + 2}: Department "${department}" ไม่ตรงกับตัวเลือก (Warehouse หรือ Stock)`);
+                                department = '';
+                            }
+                        }
+
+                        let typecarTwo = row['ชนิดรถ'] || row['Typecar'] || '';
+                        let frontPlate = row['ทะเบียนรถ หัว'] || row['FrontPlate'] || '';
+                        let rearPlate = row['ทะเบียนรถ ท้าย'] || row['RearPlate'] || '';
+
+                        // ถ้าเป็นรถสิบล้อ → บังคับ rearPlate = "-"
+                        if (typecarTwo === 'รถสิบล้อ') {
+                            rearPlate = "-";
+                        }
+
+                  
+                        return {
+                            subblier: row['ชื่อ Supplier'] || row['Supplier'] || session?.supplier || '',
+                            fullname: row['ชื่อ นามสกุล'] || row['Fullname'] || '',
+                            typecarTwo: typecarTwo,
+                            frontPlate: frontPlate,
+                            rearPlate: rearPlate,
+                            product: row['สินค้า'] || row['Product'] || '',
+                            department: department,
+                            weightDate: weightDate,
+                            weightTime: row['เวลาที่จะเข้าชั่ง'] || row['WeightTime'] || ''
+                        };
+                    });
+
+                    // เพิ่มข้อมูลเข้า dataList
+                    dataList.push(...importedData);
+                    renderTable();
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Import สำเร็จ',
+                        text: `เพิ่มข้อมูล ${importedData.length} รายการเรียบร้อยแล้ว`,
+                        confirmButtonText: 'ตกลง'
+                    });
+
+                    // Reset input
+                    excelFileInput.value = '';
+                    
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาด',
+                        text: 'ไม่สามารถอ่านไฟล์ Excel ได้: ' + error.message,
+                        confirmButtonText: 'ตกลง'
+                    });
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        });
+
+
+
+
 // สำหรับแสดงค่า ตอนที่ มีการเพิ่มข้อมูล
 function renderTable() {
     dataTableBody.innerHTML = ''; // เคลียร์ก่อน
@@ -456,7 +596,6 @@ addDatabase.addEventListener('click',async() => {
             }
         });
 
-        // const response = await fetch('https://server-pepsicola-1.onrender.com/addDataMySQL' , {
 
         const session = JSON.parse(sessionStorage.getItem('userSession'));
 

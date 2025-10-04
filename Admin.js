@@ -4,6 +4,8 @@ const tableBody = document.querySelector('.data-table tbody');
 
 // Model Add Admin
 const btnaddAdmin = document.getElementById('btnaddAdmin');
+const btnShowAdmin = document.getElementById('btnShowAdmin');
+const btnShowUser = document.getElementById('btnShowUser');
 const adminModal = document.getElementById('adminModal'); 
 const closeModal = document.getElementById('closeModal');
 const adminForm = document.getElementById('adminForm');
@@ -55,12 +57,13 @@ userType.addEventListener('change', () => {
 });
 
 btnSaveAdmin.addEventListener('click', async () => {
+    const fullname = document.getElementById('fullname').value;
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
     const type = userType.value;
     const department = type === 'superadmin' ? departmentInput.value : departmentSelect.value;
 
-    if (!username || !password || !type || !department) {
+    if (!fullname || !username || !password || !type || !department) {
         Swal.fire({
             icon: 'warning',
             title: 'กรุณากรอกข้อมูลให้ครบถ้วน'
@@ -70,6 +73,7 @@ btnSaveAdmin.addEventListener('click', async () => {
 
     // สร้าง object สำหรับส่งไป backend
     const userData = {
+    fullname: fullname,
     username: username,
     password_hash: password, // แนะนำ hash ใน server
     type: type,              // admin / superadmin
@@ -207,8 +211,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (session.type === 'superadmin') {
         btnaddAdmin.style.display = 'inline-block'; // หรือ 'block'
+        btnShowAdmin.style.display = 'inline-block';
+        btnShowUser.style.display = 'inline-block';
     } else {
         btnaddAdmin.style.display = 'none';
+        btnShowAdmin.style.display = 'none';
+        btnShowUser.style.display = 'none';
     }
 
    
@@ -229,9 +237,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ดึงข้อมูลจาก ฐานข้อมูลสำรับ User Regis
 async function loadRegiscarData() {
     try {
+
+         Swal.fire({
+            title: 'กำลังโหลดข้อมูล...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         const session = JSON.parse(sessionStorage.getItem('userSession'));
         
-    
         // const response = await fetch('http://localhost:3000/admin/get-regiscar-data', {
         //     method: 'POST',
         //     headers: { 'Content-Type': 'application/json' },
@@ -262,13 +278,30 @@ async function loadRegiscarData() {
             // if !ok ในกรณีที่ เป็น Error อื่น ที่ ไม่ใช่ 401 new Error('ข้อความ') = สร้าง object error ที่มี message เอาไว้   โค้ดจะ กระโดดไปที่ catch ของ try...catch
             throw new Error('Failed to fetch data');
         }
-        
+
         const result = await response.json();
-        displayData(result.data);
+
+       if (result.data && result.data.length > 0) {
+            displayData(result.data);
+        } else {
+            Swal.fire({
+                icon: 'info',
+                title: 'ไม่มีข้อมูล',
+                text: 'ไม่พบข้อมูลสำหรับการแสดงผล'
+            });
+        }
+
+
 
     } catch (err) {
-        console.error('Error loading data:', err);
-        alert('เกิดข้อผิดพลาดในการโหลดข้อมูล');
+       console.error('Error loading data:', err);
+        Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: 'ไม่สามารถโหลดข้อมูลได้'
+        });
+    } finally{
+        Swal.close();
     }
 }
 
@@ -308,10 +341,12 @@ function displayData(data) {
             <td>${row.department || 'N/A'}</td>
             <td>
                   <button class="btn-accept" 
+                        data-fullname="${row.full_name}"
                         data-username="${row.username}"
                         data-password="${row.password_hash}"
                         data-supplier="${row.supplier_name}"
                         data-department="${row.department}"
+                        data-phone="${row.phone}"
                         onclick="handleAcceptSimple(this)">ยอมรับ</button>
                 <button class="btn-reject" onclick="handleReject('${row.username}')">ไม่ยอมรับ</button>
             </td>
@@ -330,7 +365,6 @@ async function handleReject(username) {
     try {
         const session = JSON.parse(sessionStorage.getItem('userSession'));
         
-        // const response = await fetch('https://server-pepsicola-1.onrender.com/api/reject-user', {
      
         //  const response = await fetch('http://localhost:3000/api/reject-user', {
         //     method: 'POST',
@@ -372,20 +406,30 @@ async function handleReject(username) {
 //  fn handleAccept ยอมรับ User Register
 async function handleAcceptSimple(button) {
     const userData = {
+        fullname: button.dataset.fullname,
         username: button.dataset.username,
         password_hash: button.dataset.password,
         supplier_name: button.dataset.supplier,
-        department: button.dataset.department
+        department: button.dataset.department,
+        phone: button.dataset.phone
     };
 
-    if (!confirm(`คุณต้องการยอมรับ ${userData.username} หรือไม่?`)) {
+     const result = await Swal.fire({
+        title: `คุณต้องการยอมรับ ${userData.username} หรือไม่?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ยืนยัน',
+        cancelButtonText: 'ยกเลิก'
+    });
+
+    if (!result.isConfirmed) {
         return;
     }
+
 
     try {
         const session = JSON.parse(sessionStorage.getItem('userSession'));
         
-        // const response = await fetch('https://server-pepsicola-1.onrender.com/api/accept-user', {
         //  const response = await fetch(' http://localhost:3000/api/accept-user', {
         //     method: 'POST',
         //     headers: { 'Content-Type': 'application/json' },
@@ -408,16 +452,33 @@ async function handleAcceptSimple(button) {
 
         const result = await response.json();
 
-        if (response.ok && result.success) {
-            alert(result.message);
-            await loadRegiscarData();
-        } else {
-            alert(result.message || 'เกิดข้อผิดพลาด');
-        }
+      if (response.ok && result.success) {
+    Swal.fire({
+        icon: 'success',
+        title: 'สำเร็จ',
+        text: result.message,
+        showConfirmButton: false,
+        timer: 2000
+    }).then(() => {
+        loadRegiscarData();
+    });
+} else {
+    Swal.fire({
+        icon: 'error',
+        title: 'ผิดพลาด',
+        text: result.message || 'เกิดข้อผิดพลาด'
+    });
+}
+
+
 
     } catch (err) {
-        console.error('Error accepting user:', err);
-        alert('เกิดข้อผิดพลาดในการยอมรับ User');
+       //console.error('Error accepting user:', err);
+         Swal.fire({
+        icon: 'error',
+        title: 'ข้อผิดพลาด',
+        text: 'เกิดข้อผิดพลาดในการยอมรับ User'
+    });
     }
 }
 
@@ -517,7 +578,8 @@ function displayModalData(data) {
             <td>${row.RearPlate || 'N/A'}</td>
             <td>${row.Product || 'N/A'}</td>
             <td>${row.department || 'N/A'}</td>
-            <td>${row.Date || 'N/A'}</td>
+            <!-- <td>${row.Date || 'N/A'}</td> -->
+<td>${row.Date ? new Date(row.Date).toISOString().split('T')[0] : 'N/A'}</td>
             <td>${row.Time || 'N/A'}</td>
              <td>${row.id_user || 'N/A'}</td>
                
@@ -535,7 +597,7 @@ function displayModalData(data) {
 }
 
 
-// Fn_Enpoint สำหรับ ยอมรับ จาก Admin , SupderAdmin
+// Fn_Enpoint สำหรับ ยอมรับ Order Car Register จาก Admin , SupderAdmin
 async function handleAcceptFromModal(id) {
     const session = JSON.parse(sessionStorage.getItem('userSession'));
     if (!session || !session.sessionKey) {
@@ -546,6 +608,8 @@ async function handleAcceptFromModal(id) {
     // หาแถวที่กดปุ่ม
     const rowEl = document.querySelector(`button[data-id="${id}"]`).closest('tr');
     if (!rowEl) return;
+
+
 
     const rowData = {
         subblier: rowEl.children[0].textContent,
@@ -562,13 +626,26 @@ async function handleAcceptFromModal(id) {
        
     };
 
+     // ✅ ถามก่อนยืนยัน
+    const confirmResult = await Swal.fire({
+        title: `คุณต้องการยอมรับ Order ของ ${rowData.fullname} หรือไม่?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ยืนยัน',
+        cancelButtonText: 'ยกเลิก'
+    });
+
+    if (!confirmResult.isConfirmed) {
+        return; // ถ้าไม่กดยืนยัน 
+    }
+
      Swal.fire({
         title: 'กำลังยอมรับ Order ....',
         text: 'กรุณารอสักครู่',
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading()
     });
-
+ //debugger
     try {
         // const response = await fetch('http://localhost:3000/register-accepted', {
         //     method: 'POST',
@@ -624,6 +701,27 @@ async function handleRejectFromModal(id) {
     // หาแถวที่กดปุ่ม
     const rowEl = document.querySelector(`button.btn-reject[onclick="handleRejectFromModal(${id})"]`).closest('tr');
     if (!rowEl) return;
+
+
+      // สร้าง rowData ก่อนใช้
+const rowData = {
+    fullname: rowEl.children[1].textContent
+};
+
+// ถาม confirm
+const confirmResult = await Swal.fire({
+    title: `คุณต้องการลบ Order ของ ${rowData.fullname} จริงหรือไม่?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'ลบ',
+    cancelButtonText: 'ยกเลิก'
+});
+
+if (!confirmResult.isConfirmed) {
+    return;
+}
+
+
 
      Swal.fire({
         title: 'กำลังลบ Order ....',

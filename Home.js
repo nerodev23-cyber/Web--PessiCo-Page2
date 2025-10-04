@@ -236,7 +236,6 @@ btnloginAdmin.addEventListener('click', async (e) => {
     });
 
     try {
-        // const response = await fetch('https://server-pepsicola-1.onrender.com/loginAdminandUser', {     
 
         //  const response = await fetch('http://localhost:3000/loginAdminandUser', {
         //     method: 'POST',
