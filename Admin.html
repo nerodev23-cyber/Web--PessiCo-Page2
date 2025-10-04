@@ -189,7 +189,8 @@
         <button class="search-btn">ค้นหา</button>
         <button class="fetch-btn">Order ที่มีการเข้าชั่งวันนี้</button>
        <button class="btnaddAdmin" id="btnaddAdmin" style="display:none;">เพิ่มข้อมูล Admin</button>
-
+       <button class="btnaddAdmin" id="btnShowAdmin" style="display:none;">รายชื่อ Admin ทั้งหมด</button>
+       <button class="btnaddAdmin" id="btnShowUser" style="display:none;">รายชื่อ User ทั้งหมด</button>
     </div>
 </div>
 
@@ -271,26 +272,29 @@
   <div class="modal-content" style="background:#fff; padding:20px; border-radius:8px; width:300px; margin:auto;">
     <h3>เพิ่มข้อมูล Admin</h3>
     <form id="adminForm">
+            <label>Full-Name</label>
+      <input type="text" id="fullname" placeholder="Username" required><br><br>
+
       <label>Username</label>
       <input type="text" id="username" placeholder="Username" required><br><br>
 
       <label>Password</label>
       <input type="password" id="password" placeholder="Password" required><br><br>
 
-<label>Type</label>
-<select id="userType" required>
-  <option value="">-- เลือกประเภท --</option>
-  <option value="admin">Admin</option>
-  <option value="superadmin">Superadmin</option>
-</select><br><br>
+    <label>Type</label>
+    <select id="userType" required>
+      <option value="">-- เลือกประเภท --</option>
+      <option value="admin">Admin</option>
+      <option value="superadmin">Superadmin</option>
+    </select><br><br>
 
-<label>Department</label>
-<input type="text" id="departmentInput" placeholder="Department" style="display:none;" readonly required><br>
-<select id="departmentSelect" style="display:none;">
-  <option value="">-- เลือก Department --</option>
-  <option value="Warehouse">Warehouse</option>
-  <option value="Stock">Stock</option>
-</select><br><br>
+    <label>Department</label>
+    <input type="text" id="departmentInput" placeholder="Department" style="display:none;" readonly required><br>
+    <select id="departmentSelect" style="display:none;">
+      <option value="">-- เลือก Department --</option>
+      <option value="Warehouse">Warehouse</option>
+      <option value="Stock">Stock</option>
+    </select><br><br>
 
 
       <button type="button" id="btnSaveAdmin">บันทึก</button>
