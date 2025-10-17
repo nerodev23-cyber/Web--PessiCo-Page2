@@ -310,12 +310,12 @@ select#typecar:focus {
     <button class="search-btn">ค้นหา</button> -->
     <!-- <button class="fetch-btn">Order วันนี้</button> -->
     <button class="openModalBtn" id="openModalBtn">เพิ่มข้อมูล</button>
-    <button class="openModalBtn" id="addDatabase">บันทึกรายการทั้งหมดที่จะชั่งเข้า</button>
+    <button class="openModalBtn" id="addDatabase">บันทึกข้อมูล</button>
     <button class="openModalBtn" id="btnViewRegisteredData">ประวิตข้อมูลที่ลงทะเบียน</button>
      <button class="" id="btnViewPendingOrders">ประวัติข้อมูลรอเข้าชั่ง</button>
 
       <div class="button-container">
-        <button class="openModalBtn" id="openModalBtn">เพิ่มข้อมูล</button>
+        <button class="openModalBtn" id="openModalBtn"> Import Excel</button>
         <label for="excelFileInput" class="file-input-label">
             📊 Import Excel
         </label>
@@ -363,18 +363,16 @@ select#typecar:focus {
                  <input type="text" id="department" readonly><br><br> -->
 
                
-<div class="form-group">
-    <label for="department">แผนกที่ต้องการติดต่อ</label>
-    <select id="department" name="department" required style="width:100%; padding:5px; font-size:16px; border-radius:5px;">
-        <option value="">-- เลือกแผนกที่ต้องการติดต่อ --</option>
-        <option value="Warehouse">Warehouse</option>
-        <option value="Stock">Stock</option>
-    </select>
-</div> <br>
+                <div class="form-group">
+                    <label for="department">แผนกที่ต้องการติดต่อ</label>
+                    <select id="department" name="department" required style="width:100%; padding:5px; font-size:16px; border-radius:5px;">
+                        <option value="">-- เลือกแผนกที่ต้องการติดต่อ --</option>
+                        <option value="Warehouse">Warehouse</option>
+                        <option value="Stock">Stock</option>
+                    </select>
+                </div> <br>
 
 
-
-                
                 <label>วันที่จะเข้าชั่ง :</label><br>
                 <input type="date" id="weightDate" required><br>
 
@@ -383,7 +381,7 @@ select#typecar:focus {
                 <span id="thaiTime" style="font-weight:bold; color:black;"></span><br><br>
 
 
-                <button type="submit">บันทึก5</button>
+                <button type="submit">บันทึก</button>
             </form>
         </div>
     </div>

@@ -101,16 +101,7 @@ btnViewRegisteredData.addEventListener("click", async function () {
         });
 
     try {
-        // const response = await fetch('http://localhost:3000/user/get-btnViewRegisteredData', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({
-        //         sessionKey: session.sessionKey,
-        //         username: session.username
-        //     })
-        // });
-
-          const response = await fetch('https://server-pepsicola-1.onrender.com/user/get-btnViewRegisteredData', {
+        const response = await fetch('https://server-pepsicola-1.onrender.com/user/get-btnViewRegisteredData', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -118,6 +109,8 @@ btnViewRegisteredData.addEventListener("click", async function () {
                 username: session.username
             })
         });
+
+         
 
 
         if (!response.ok) throw new Error('Failed to fetch data');
@@ -188,16 +181,7 @@ btnViewPendingOrders.addEventListener("click", async function () {
     });
 
     try {
-        // const response = await fetch('http://localhost:3000/user/get-btnViewPendingOrders', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({
-        //         sessionKey: session.sessionKey,
-        //         username: session.username
-        //     })
-        // });
-
-          const response = await fetch('https://server-pepsicola-1.onrender.com/user/get-btnViewPendingOrders', {
+        const response = await fetch('https://server-pepsicola-1.onrender.com/user/get-btnViewPendingOrders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -205,6 +189,8 @@ btnViewPendingOrders.addEventListener("click", async function () {
                 username: session.username
             })
         });
+
+        
 
 
         if (!response.ok) throw new Error('Failed to fetch data');
@@ -219,8 +205,18 @@ btnViewPendingOrders.addEventListener("click", async function () {
             tbody.innerHTML = '<tr><td colspan="10">ไม่มีข้อมูล</td></tr>';
             return;
         }
-
+   // เพิ่มในการเช็ค
         result.data.forEach(row => {
+
+            let statusHTML = `<td style="color:orange;">รอดำเนินการชั่ง...</td>`;
+            if (row.Status === 'Success') {
+                statusHTML = `<td style="color:green;">Success</td>`;
+            } else if (row.Status === 'Cancel') {
+                statusHTML = `<td style="color:red;">Cancel</td>`;
+            } else if (row.Status === 'Process') {
+                statusHTML = `<td style="color:blue;">กำลังดำเนินการ</td>`;
+            }
+
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${row.NameSupplier || 'N/A'}</td>
@@ -229,11 +225,10 @@ btnViewPendingOrders.addEventListener("click", async function () {
                 <td>${row.FrontPlate || 'N/A'}</td>
                 <td>${row.RearPlate || 'N/A'}</td>
                 <td>${row.Product || 'N/A'}</td>
-                <td>${row.department || 'N/A'}</td>
-                 <!-- <td>${row.Date || 'N/A'}</td> -->
-                  <td>${row.Date ? new Date(row.Date).toISOString().split('T')[0] : 'N/A'}</td>
+                <td>${row.Department || 'N/A'}</td>
+                  <td>${row.Date || 'N/A'}</td> 
                 <td>${row.Time || 'N/A'}</td>
-                <td style="color:orange;">รอดำเนินการชั่ง...</td>
+                ${statusHTML}
             `;
             tbody.appendChild(tr);
         });
@@ -293,6 +288,27 @@ dataForm.addEventListener('submit', (e) => {
 
     const departmentSelect = document.getElementById('department');
     const department  = departmentSelect.value;  
+
+     // 🧩 เช็คห้ามมีช่องว่าง 2 ช่องติดกันในทะเบียนรถ-หัว
+    if (/\s{2,}/.test(frontPlate)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'รูปแบบทะเบียนรถไม่ถูกต้อง',
+            text: 'ห้ามเว้นวรรคมากกว่า 1 ช่องในทะเบียนรถ-หัว',
+            confirmButtonText: 'ตกลง'
+        });
+        return;
+    }
+
+     if (/\s{2,}/.test(rearPlate)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'รูปแบบทะเบียนรถไม่ถูกต้อง',
+            text: 'ห้ามเว้นวรรคมากกว่า 1 ช่องในทะเบียนรถ-ท้าย',
+            confirmButtonText: 'ตกลง'
+        });
+        return;
+    }
 
 // เช็คห้ามเลือกวันย้อนหลังและห้ามเลือกวันอนาคต
 const todayStr = new Date().toISOString().split("T")[0]; // yyyy-mm-dd ของวันนี้
@@ -555,7 +571,30 @@ function openCopyModal(index) {
 }
 
 
+// 🔹 Function สำหรับเช็คข้อมูลซ้ำ
+function checkDuplicateData(dataList) {
+    const seen = new Map();
+    const duplicates = [];
 
+    dataList.forEach((item) => {
+        // สร้าง key จาก 4 ค่าที่ต้องการเช็ค
+        const key = `${item.frontPlate}|${item.rearPlate}|${item.weightDate}|${item.weightTime}`;
+        
+        if (seen.has(key)) {
+            // ถ้าเจอข้อมูลซ้ำ เก็บไว้
+            duplicates.push({
+                frontPlate: item.frontPlate,
+                rearPlate: item.rearPlate,
+                weightDate: item.weightDate,
+                weightTime: item.weightTime
+            });
+        } else {
+            seen.set(key, true);
+        }
+    });
+
+    return duplicates;
+}
 
 
 addDatabase.addEventListener('click',async() => {
@@ -570,6 +609,24 @@ addDatabase.addEventListener('click',async() => {
     }
     //
     try{
+
+
+          // 🔹 เช็คข้อมูลซ้ำ
+    const duplicates = checkDuplicateData(dataList);
+    if (duplicates.length > 0) {
+        let duplicateMsg = 'พบข้อมูลซ้ำกัน:\n\n';
+        duplicates.forEach((dup, index) => {
+            duplicateMsg += `${index + 1}. ทะเบียนรถ-หัว: ${dup.frontPlate}, ทะเบียนรถ-ท้าย: ${dup.rearPlate}, วันที่: ${dup.weightDate}, เวลา: ${dup.weightTime}\n`;
+        });
+        
+        Swal.fire({
+            icon: 'error',
+            title: 'ข้อมูลมีการซ้ำกัน',
+            text: duplicateMsg,
+            confirmButtonText: 'ตกลง'
+        });
+        return;
+    }
 
 
             // 🔹 Confirm ก่อนบันทึก
@@ -599,20 +656,7 @@ addDatabase.addEventListener('click',async() => {
 
         const session = JSON.parse(sessionStorage.getItem('userSession'));
 
-        //  const response = await fetch('http://localhost:3000/addDataMySQL' , {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //   // body: JSON.stringify(dataList )
-        //     body: JSON.stringify({
-        //     dataList: dataList,
-        //     sessionKey: session.sessionKey,
-        //     username: session.username
-        //     })
-        // })
-
-          const response = await fetch('https://server-pepsicola-1.onrender.com/addDataMySQL' , {
+         const response = await fetch('https://server-pepsicola-1.onrender.com/addDataMySQL' , {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -624,6 +668,8 @@ addDatabase.addEventListener('click',async() => {
             username: session.username
             })
         })
+
+       
 
         if (response.status !== 200) {
             throw new Error(`HTTP error! status: ${response.status}`);

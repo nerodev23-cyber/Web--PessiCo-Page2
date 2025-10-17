@@ -14,7 +14,22 @@ const departmentInput = document.getElementById('departmentInput');
 const departmentSelect = document.getElementById('departmentSelect');
 const btnSaveAdmin = document.getElementById('btnSaveAdmin');
 
+// btn ที่ชั่งเสร็จแล้ว
+const fetchSuccess = document.querySelector('.fetchSuccess-btn');
+const apiModalSuccess = document.getElementById('apiModalSuccess');
+const closeApiModalSuccess = document.getElementById('closeApiModalSuccess');
 
+// btn สำหรับแสดงรายการข้อมูล Admin
+const apiModalshowinfoAdmin = document.getElementById('apiModalshowinfoAdmin');
+const closeApiModalshowinfoAdmin = document.getElementById('closeApiModalshowinfoAdmin');
+
+
+// btn สำหรับแสดงรายการข้อมูล User
+const apiModalshowinfoUser = document.getElementById('apiModalshowinfoUser');
+const closeapiModalshowinfoUser = document.getElementById('closeapiModalshowinfoUser');
+
+
+// Model ที่ดู Order
 const fetchBtn = document.querySelector('.fetch-btn');
 const apiModal = document.getElementById('apiModal');
 const closeBtn = document.getElementById('closeApiModal');
@@ -23,6 +38,58 @@ const logoutadmin = document.getElementById('logoutadmin');
 closeBtn.addEventListener('click', () => {
   apiModal.style.display = 'none';
 });
+
+// ปุ่มสำหรับแสดงรายการ Order Regiscar ของ User
+fetchBtn.addEventListener('click', async () => {
+    // เปิด modal
+    apiModal.style.display = 'block';
+    loadDepartmentData();
+    
+});
+
+// btn ที่ชั่งเสร็จแล้ว=================
+fetchSuccess.addEventListener('click', async () => {
+    // เปิด modal
+    apiModalSuccess.style.display = 'block';
+    loadDepartmentDataSuccess();
+    
+});
+
+closeApiModalSuccess.addEventListener('click', () => {
+  apiModalSuccess.style.display = 'none';
+});
+// btn ที่ชั่งเสร็จแล้ว=================
+
+
+//  สำหรับ SuperAdmin ที่ ดู รายการ Admin =========
+
+btnShowAdmin.addEventListener('click', async () => {
+    // เปิด modal
+    apiModalshowinfoAdmin.style.display = 'block';
+    loaddataListAdmin();
+    
+});
+
+closeApiModalshowinfoAdmin.addEventListener('click', () => {
+  apiModalshowinfoAdmin.style.display = 'none';
+});
+
+
+
+//  สำหรับ SuperAdmin and Admin ที่ ดู รายการ User =========
+
+btnShowUser.addEventListener('click', async () => {
+    // เปิด modal
+    apiModalshowinfoUser.style.display = 'block';
+    loaddataListUser();
+    
+});
+
+closeapiModalshowinfoUser.addEventListener('click', () => {
+  apiModalshowinfoUser.style.display = 'none';
+});
+
+
 
 
 // เพิ่ม admin of SuperAdmin
@@ -90,16 +157,7 @@ btnSaveAdmin.addEventListener('click', async () => {
 
         const session = JSON.parse(sessionStorage.getItem('userSession'));
 
-    //     const response = await fetch('http://localhost:3000/api/add-admin', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({
-    //         sessionKey: session.sessionKey,
-    //         userData
-    //     })
-    //    });
-
-     const response = await fetch('https://server-pepsicola-1.onrender.com/api/add-admin', {
+        const response = await fetch('https://server-pepsicola-1.onrender.com/api/add-admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -107,6 +165,8 @@ btnSaveAdmin.addEventListener('click', async () => {
             userData
         })
        });
+
+   
 
         const result = await response.json();
         Swal.close(); // ปิด loading
@@ -160,15 +220,24 @@ window.addEventListener('click', (e) => {
   if (e.target === apiModal) {
     apiModal.style.display = 'none';
   }
+
+   if (e.target === apiModalSuccess) {
+    apiModalSuccess.style.display = 'none';
+  }
+
+   if (e.target === apiModalshowinfoAdmin) {
+    apiModalshowinfoAdmin.style.display = 'none';
+  }
+
+  if (e.target === apiModalshowinfoUser) {
+    apiModalshowinfoUser.style.display = 'none';
+  }
+
+   if (e.target === adminModal) {
+    adminModal.style.display = 'none';
+  }
 });
 
-// ปุ่มสำหรับแสดงรายการ Order Regiscar ของ User
-fetchBtn.addEventListener('click', async () => {
-    // เปิด modal
-    apiModal.style.display = 'block';
-    loadDepartmentData();
-    
-});
 
 // ปุ่ม ค้นหา
 document.querySelector('.search-btn').addEventListener('click', function () {
@@ -212,11 +281,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (session.type === 'superadmin') {
         btnaddAdmin.style.display = 'inline-block'; // หรือ 'block'
         btnShowAdmin.style.display = 'inline-block';
-        btnShowUser.style.display = 'inline-block';
     } else {
         btnaddAdmin.style.display = 'none';
         btnShowAdmin.style.display = 'none';
-        btnShowUser.style.display = 'none';
     }
 
    
@@ -234,7 +301,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadRegiscarData();
 });
 
-// ดึงข้อมูลจาก ฐานข้อมูลสำรับ User Regis
+// ดึงข้อมูลจาก Order จาก ฐานข้อมูลสำรับ User ที่ได้ Register
 async function loadRegiscarData() {
     try {
 
@@ -248,16 +315,6 @@ async function loadRegiscarData() {
 
         const session = JSON.parse(sessionStorage.getItem('userSession'));
         
-        // const response = await fetch('http://localhost:3000/admin/get-regiscar-data', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //      body: JSON.stringify({ 
-        //         sessionKey: session.sessionKey,
-        //         type: session.type,
-        //         departmentData: session.departmentData
-        //     })
-        // });
-
         const response = await fetch('https://server-pepsicola-1.onrender.com/admin/get-regiscar-data', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -268,6 +325,7 @@ async function loadRegiscarData() {
             })
         });
 
+      
         if (!response.ok) {
             if (response.status === 401) {
                 alert('Session หมดอายุ กรุณาเข้าสู่ระบบใหม่');
@@ -366,16 +424,7 @@ async function handleReject(username) {
         const session = JSON.parse(sessionStorage.getItem('userSession'));
         
      
-        //  const response = await fetch('http://localhost:3000/api/reject-user', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ 
-        //         sessionKey: session.sessionKey,
-        //         username: username 
-        //     })
-        // });
-
-          const response = await fetch('https://server-pepsicola-1.onrender.com/api/reject-user', {
+         const response = await fetch('https://server-pepsicola-1.onrender.com/api/reject-user', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -383,6 +432,8 @@ async function handleReject(username) {
                 username: username 
             })
         });
+
+        
 
         const result = await response.json();
 
@@ -430,16 +481,7 @@ async function handleAcceptSimple(button) {
     try {
         const session = JSON.parse(sessionStorage.getItem('userSession'));
         
-        //  const response = await fetch(' http://localhost:3000/api/accept-user', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ 
-        //         sessionKey: session.sessionKey,
-        //         userData: userData
-        //     })
-        // });
-
-         const response = await fetch('https://server-pepsicola-1.onrender.com/api/accept-user', {
+         const response = await fetch(' https://server-pepsicola-1.onrender.com/api/accept-user', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -447,6 +489,8 @@ async function handleAcceptSimple(button) {
                 userData: userData
             })
         });
+
+       
 
 
 
@@ -484,6 +528,28 @@ async function handleAcceptSimple(button) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // สำหรับ Admin , SuperAdmin ดู ข้อมูลรถที่ได้ลงทะเบียน  เพื่อกด ยอมรับ Order หรือ  ไม่ยอมรับ Order  
 async function loadDepartmentData() {
 
@@ -509,16 +575,7 @@ async function loadDepartmentData() {
         const orderList = document.getElementById('orderList');
         orderList.innerHTML = '<tr><td colspan="7">กำลังโหลดข้อมูล...</td></tr>';
 
-        // const response = await fetch('http://localhost:3000/admin/get-regiscar-data-order', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ 
-        //         sessionKey: session.sessionKey,
-        //         departmentData: session.departmentData
-        //     })
-        // });
-
-          const response = await fetch('https://server-pepsicola-1.onrender.com/admin/get-regiscar-data-order', {
+        const response = await fetch('https://server-pepsicola-1.onrender.com/admin/get-regiscar-data-order', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -526,6 +583,8 @@ async function loadDepartmentData() {
                 departmentData: session.departmentData
             })
         });
+
+       
 
         
         if (!response.ok) {
@@ -551,6 +610,130 @@ async function loadDepartmentData() {
         alert('เกิดข้อผิดพลาดในการโหลดข้อมูล');
     }
 }
+
+// Order ที่ เตรียมชั่ง
+async function loadDepartmentDataSuccess() {
+
+    Swal.fire({
+        title: 'กำลังโหลดข้อมูล...',
+        text: 'กรุณารอสักครู่',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+
+    try {
+        const session = JSON.parse(sessionStorage.getItem('userSession'));
+        
+        if (!session || !session.sessionKey) {
+            alert('กรุณาเข้าสู่ระบบก่อน');
+            window.location.href = '/Homepage.html';
+            return;
+        }
+        // แสดงข้อความ Loading
+        const orderList = document.getElementById('orderList');
+        orderList.innerHTML = '<tr><td colspan="7">กำลังโหลดข้อมูล...</td></tr>';
+
+        const response = await fetch('https://server-pepsicola-1.onrender.com/admin/get-regiscar-data-order-success', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                sessionKey: session.sessionKey,
+                departmentData: session.departmentData
+            })
+        });
+
+       
+
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                alert('Session หมดอายุ กรุณาเข้าสู่ระบบใหม่');
+                sessionStorage.removeItem('userSession');
+                window.location.href = '/Homepage.html';
+                return;
+            }
+            throw new Error('Failed to fetch department data');
+        }
+        
+        const result = await response.json();
+        displayModalDataSuccess(result.data);
+
+        Swal.close();
+         
+
+    } catch (err) {
+        console.error('Error loading department data:', err);
+        const orderList = document.getElementById('orderList');
+        orderList.innerHTML = '<tr><td colspan="7">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>';
+        alert('เกิดข้อผิดพลาดในการโหลดข้อมูล');
+    }
+}
+
+//========
+async function loaddataListUser() {
+
+    Swal.fire({
+        title: 'กำลังโหลดข้อมูล...',
+        text: 'กรุณารอสักครู่',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+
+    try {
+        const session = JSON.parse(sessionStorage.getItem('userSession'));
+        
+        if (!session || !session.sessionKey) {
+            alert('กรุณาเข้าสู่ระบบก่อน');
+            window.location.href = '/Homepage.html';
+            return;
+        }
+        // แสดงข้อความ Loading
+        const orderList = document.getElementById('orderList');
+        orderList.innerHTML = '<tr><td colspan="7">กำลังโหลดข้อมูล...</td></tr>';
+
+        const response = await fetch('https://server-pepsicola-1.onrender.com/get-data-User', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                sessionKey: session.sessionKey,
+                departmentData: session.departmentData
+            })
+        });
+
+       
+
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                alert('Session หมดอายุ กรุณาเข้าสู่ระบบใหม่');
+                sessionStorage.removeItem('userSession');
+                window.location.href = '/Homepage.html';
+                return;
+            }
+            throw new Error('Failed to fetch department data');
+        }
+        
+        const result = await response.json();
+        displayModaloaddataListUser(result.data);
+
+        Swal.close();
+         
+
+    } catch (err) {
+        console.error('Error loading department data:', err);
+        const orderList = document.getElementById('orderList');
+        orderList.innerHTML = '<tr><td colspan="7">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>';
+        alert('เกิดข้อผิดพลาดในการโหลดข้อมูล');
+    }
+}
+
+
 // รับข้อมูลของ Order user แล้ว แสดงผล
 function displayModalData(data) {
     const orderList = document.getElementById('orderList');
@@ -578,10 +761,10 @@ function displayModalData(data) {
             <td>${row.RearPlate || 'N/A'}</td>
             <td>${row.Product || 'N/A'}</td>
             <td>${row.department || 'N/A'}</td>
-            <!-- <td>${row.Date || 'N/A'}</td> -->
-<td>${row.Date ? new Date(row.Date).toISOString().split('T')[0] : 'N/A'}</td>
+             <td>${row.Date || 'N/A'}</td> 
+<!-- <td>${row.Date ? new Date(row.Date).toISOString().split('T')[0] : 'N/A'}</td> -->
             <td>${row.Time || 'N/A'}</td>
-             <td>${row.id_user || 'N/A'}</td>
+            <!-- <td>${row.id_user || 'N/A'}</td> -->
                
            
             <td>
@@ -595,6 +778,426 @@ function displayModalData(data) {
         orderList.appendChild(tr);
     });
 }
+
+
+// รับข้อมูลของ Order user แล้ว แสดงผล
+function displayModalDataSuccess(data) {
+    const orderListSuccess = document.getElementById('orderListSuccess');
+    if (!orderListSuccess) {
+        console.error('Order list element not found!');
+        return;
+    }
+    
+    orderListSuccess.innerHTML = ''; // ล้างข้อมูลเก่า
+
+    if (!data || data.length === 0) {
+        orderListSuccess.innerHTML = '<tr><td colspan="10">ไม่มีข้อมูล</td></tr>';
+        return;
+    }
+
+    data.forEach(row => {
+        const tr = document.createElement('tr');
+        //  <td>${row.id || 'N/A'}</td>
+
+         // ถ้า Status = 'Success' ให้เป็นกล่องสีเขียว
+       switch (row.Status) {
+    case 'Success':
+        statusColor = 'background-color: #4CAF50; color: black; border-radius: 4px; padding: 5px 8px;';
+        break;
+    case 'Planning':
+        statusColor = 'background-color: #FFA500; color: black; border-radius: 4px; padding: 5px 8px;';
+        break;
+    case 'Process':
+        statusColor = 'background-color: #2196F3; color: black; border-radius: 4px; padding: 5px 8px;';
+        break;
+    case 'Cancel':
+        statusColor = 'background-color: #F44336; color: black; border-radius: 4px; padding: 5px 8px;';
+        break;
+    default:
+        statusColor = '';
+}
+
+        tr.innerHTML = `
+     
+            <td>${row.NameSupplier || 'N/A'}</td>
+            <td>${row.FullName || 'N/A'}</td>
+            <td>${row.TypeCar || 'N/A'}</td>
+            <td>${row.FrontPlate || 'N/A'}</td>
+            <td>${row.RearPlate || 'N/A'}</td>
+            <td>${row.Product || 'N/A'}</td>
+            <td>${row.Department || 'N/A'}</td>
+            <td>${row.Date || 'N/A'}</td> 
+            <td>${row.Time || 'N/A'}</td>
+            <td><span style="${statusColor}">${row.Status || 'N/A'}</span></td>
+
+     
+           
+           <!-- <td>
+                <button class="btn-accept" 
+                        data-id="${row.id}" 
+                        onclick="handleAcceptFromModal(${row.id})">ยอมรับ</button>
+                <button class="btn-reject" 
+                        onclick="handleRejectFromModal(${row.id})">ไม่ยอมรับ</button>
+            </td>  -->
+        `;
+        orderListSuccess.appendChild(tr);  
+    });
+}
+
+// รับข้อมูลของ Order user แล้ว แสดงผล
+function displayModaloaddataListUser(data) {
+    const orderList = document.getElementById('orderListshowinfoUser');
+    if (!orderList) {
+        console.error('Order list element not found!');
+        return;
+    }
+    
+    orderList.innerHTML = ''; // ล้างข้อมูลเก่า
+
+    if (!data || data.length === 0) {
+        orderList.innerHTML = '<tr><td colspan="10">ไม่มีข้อมูล</td></tr>';
+        return;
+    }
+
+    data.forEach(row => {
+        const tr = document.createElement('tr');
+        //  <td>${row.id || 'N/A'}</td>
+        tr.innerHTML = `
+     
+            <td>${row.id || 'N/A'}</td>
+            <td>${row.fullname || 'N/A'}</td>
+            <td>${row.username || 'N/A'}</td>
+            <td>${row.password_hash || 'N/A'}</td>
+            <td>${row.supplier || 'N/A'}</td>
+            <td>${row.type || 'N/A'}</td>
+            <td>${row.department || 'N/A'}</td>
+             <td>${row.phone || 'N/A'}</td> 
+               
+           
+            <td>
+              
+                <button class="btn-reject" 
+                        onclick="Sub_AdminRejectUser(${row.id})" style="background-color: #d33; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">ลบ</button>
+            </td>
+        `;
+        orderList.appendChild(tr);
+    });
+}
+
+
+//--------------------------------------------------------------------
+
+
+
+// แสดงรายการ List Admin
+
+async function loaddataListAdmin() {
+
+    Swal.fire({
+        title: 'กำลังโหลดข้อมูล...',
+        text: 'กรุณารอสักครู่',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+
+    try {
+        const session = JSON.parse(sessionStorage.getItem('userSession'));
+        
+        if (!session || !session.sessionKey) {
+            alert('กรุณาเข้าสู่ระบบก่อน');
+            window.location.href = '/Homepage.html';
+            return;
+        }
+        // แสดงข้อความ Loading
+        const orderList = document.getElementById('orderList');
+        orderList.innerHTML = '<tr><td colspan="7">กำลังโหลดข้อมูล...</td></tr>';
+
+        const response = await fetch('https://server-pepsicola-1.onrender.com/super/get-dataAdmin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                sessionKey: session.sessionKey,
+                departmentData: session.departmentData
+            })
+        });
+
+       
+
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                alert('Session หมดอายุ กรุณาเข้าสู่ระบบใหม่');
+                sessionStorage.removeItem('userSession');
+                window.location.href = '/Homepage.html';
+                return;
+            }
+            throw new Error('Failed to fetch department data');
+        }
+        
+        const result = await response.json();
+        displayModalListAdmin(result.data);
+
+        Swal.close();
+         
+
+    } catch (err) {
+        console.error('Error loading department data:', err);
+        const orderList = document.getElementById('orderList');
+        orderList.innerHTML = '<tr><td colspan="7">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>';
+        alert('เกิดข้อผิดพลาดในการโหลดข้อมูล');
+    }
+}
+
+
+function displayModalListAdmin(data) {
+    const orderListSuccess = document.getElementById('orderListshowinfoAdmin');
+    if (!orderListSuccess) {
+        console.error('Order list element not found!');
+        return;
+    }
+    
+    orderListSuccess.innerHTML = ''; // ล้างข้อมูลเก่า
+
+    if (!data || data.length === 0) {
+        orderListSuccess.innerHTML = '<tr><td colspan="10">ไม่มีข้อมูล</td></tr>';
+        return;
+    }
+
+    data.forEach(row => {
+        const tr = document.createElement('tr');
+        //  <td>${row.id || 'N/A'}</td>
+
+
+        tr.innerHTML = `
+     
+            <td>${row.id || 'N/A'}</td>
+            <td>${row.fullname || 'N/A'}</td>
+            <td>${row.username || 'N/A'}</td>
+            <td>${row.password_hash || 'N/A'}</td>
+            <td>${row.supplier || 'N/A'}</td>
+            <td>${row.type || 'N/A'}</td>
+            <td>${row.department || 'N/A'}</td>
+            <td>${row.phone || 'N/A'}</td> 
+
+     
+           
+           <td>
+            <button class="btn-reject" 
+                    onclick="SupRejectAdmin(${row.id})"
+                    style="background-color: #d33; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                ลบ
+            </button>
+        </td>
+        `;
+        orderListSuccess.appendChild(tr);  
+    });
+}
+
+
+
+// Function สำหรับลบ Admin
+async function SupRejectAdmin(id) {
+    try {
+        // ยืนยันการลบ
+        const confirmResult = await Swal.fire({
+            title: 'คุณต้องการลบข้อมูลนี้หรือไม่?',
+            text: 'การลบข้อมูลนี้ไม่สามารถย้อนกลับได้!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'ใช่, ลบเลย!',
+            cancelButtonText: 'ยกเลิก'
+        });
+
+        if (!confirmResult.isConfirmed) {
+            return;
+        }
+
+        // แสดง Loading
+        Swal.fire({
+            title: 'กำลังลบข้อมูล...',
+            text: 'กรุณารอสักครู่',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        const session = JSON.parse(sessionStorage.getItem('userSession'));
+        
+        if (!session || !session.sessionKey) {
+            Swal.close();
+            Swal.fire({
+                icon: 'error',
+                title: 'Session หมดอายุ',
+                text: 'กรุณาเข้าสู่ระบบใหม่'
+            });
+            window.location.href = '/Homepage.html';
+            return;
+        }
+
+        const response = await fetch('https://server-pepsicola-1.onrender.com/super/delete-admin', {
+            method: 'DELETE',
+            headers: { 
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify({ 
+                sessionKey: session.sessionKey,
+                id: id
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || 'เกิดข้อผิดพลาดในการลบข้อมูล');
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: 'ลบข้อมูลสำเร็จ',
+            text: 'ข้อมูลถูกลบเรียบร้อยแล้ว',
+            timer: 2000,
+            showConfirmButton: false
+        });
+
+        // โหลดข้อมูลใหม่หลังลบสำเร็จ
+        await loaddataListAdmin();
+
+    } catch (err) {
+        console.error('Error deleting admin:', err);
+        Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: err.message || 'ไม่สามารถลบข้อมูลได้'
+        });
+    }
+}
+
+
+
+// Function สำหรับลบ User
+async function Sub_AdminRejectUser(id) {
+    try {
+        // ยืนยันการลบ
+        const confirmResult = await Swal.fire({
+            title: 'คุณต้องการลบข้อมูลนี้หรือไม่?',
+            text: 'การลบข้อมูลนี้ไม่สามารถย้อนกลับได้!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'ใช่, ลบเลย!',
+            cancelButtonText: 'ยกเลิก'
+        });
+
+        if (!confirmResult.isConfirmed) {
+            return;
+        }
+
+        // แสดง Loading
+        Swal.fire({
+            title: 'กำลังลบข้อมูล...',
+            text: 'กรุณารอสักครู่',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        const session = JSON.parse(sessionStorage.getItem('userSession'));
+        
+        if (!session || !session.sessionKey) {
+            Swal.close();
+            Swal.fire({
+                icon: 'error',
+                title: 'Session หมดอายุ',
+                text: 'กรุณาเข้าสู่ระบบใหม่'
+            });
+            window.location.href = '/Homepage.html';
+            return;
+        }
+
+        const response = await fetch('https://server-pepsicola-1.onrender.com/super/delete-user', {
+            method: 'DELETE',
+            headers: { 
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify({ 
+                sessionKey: session.sessionKey,
+                id: id
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || 'เกิดข้อผิดพลาดในการลบข้อมูล');
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: 'ลบข้อมูลสำเร็จ',
+            text: 'ข้อมูลถูกลบเรียบร้อยแล้ว',
+            timer: 2000,
+            showConfirmButton: false
+        });
+
+        // โหลดข้อมูลใหม่หลังลบสำเร็จ
+        await loaddataListAdmin();
+
+    } catch (err) {
+        console.error('Error deleting admin:', err);
+        Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: err.message || 'ไม่สามารถลบข้อมูลได้'
+        });
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Fn_Enpoint สำหรับ ยอมรับ Order Car Register จาก Admin , SupderAdmin
@@ -647,16 +1250,7 @@ async function handleAcceptFromModal(id) {
     });
  //debugger
     try {
-        // const response = await fetch('http://localhost:3000/register-accepted', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({
-        //         sessionKey: session.sessionKey,
-        //         dataList: [rowData] // ส่งเป็น array
-        //     })
-        // });
-
-         const response = await fetch('https://server-pepsicola-1.onrender.com/register-accepted', {
+        const response = await fetch('https://server-pepsicola-1.onrender.com/register-accepted', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -664,6 +1258,8 @@ async function handleAcceptFromModal(id) {
                 dataList: [rowData] // ส่งเป็น array
             })
         });
+
+        
 
         if (!response.ok) {
             throw new Error('Failed to accept register');
@@ -731,16 +1327,7 @@ if (!confirmResult.isConfirmed) {
     });
 
     try {
-        // const response = await fetch('http://localhost:3000/register-rejected', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({
-        //         sessionKey: session.sessionKey,
-        //         id: id
-        //     })
-        // });
-
-          const response = await fetch('https://server-pepsicola-1.onrender.com/register-rejected', {
+        const response = await fetch('https://server-pepsicola-1.onrender.com/register-rejected', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -748,6 +1335,8 @@ if (!confirmResult.isConfirmed) {
                 id: id
             })
         });
+
+        
 
         if (!response.ok) throw new Error('Failed to reject register');
 

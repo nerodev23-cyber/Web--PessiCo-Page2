@@ -101,6 +101,16 @@
     background-color: #28a745; /* เขียวให้ต่างจากปุ่มค้นหา */
 }
 
+.fetchSuccess-btn{
+  padding: 8px 14px;
+    margin-left: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #228B22;
+    color: white;
+}
+
 .btnaddAdmin {
     background-color: orange; /* เขียวให้ต่างจากปุ่มค้นหา */
     color: black;
@@ -187,10 +197,11 @@
     <div style="display: flex; gap: 10px;">
         <input type="text" class="search-input" placeholder="ค้นหา User...">
         <button class="search-btn">ค้นหา</button>
-        <button class="fetch-btn">Order ที่มีการเข้าชั่งวันนี้</button>
+        <button class="fetch-btn">Order ที่มีรอการยอมรับเข้าชั่ง</button>
+        <button class="fetchSuccess-btn" >ปุ่ม Order ที่เตรียมเข้าชั่ง</button>
        <button class="btnaddAdmin" id="btnaddAdmin" style="display:none;">เพิ่มข้อมูล Admin</button>
        <button class="btnaddAdmin" id="btnShowAdmin" style="display:none;">รายชื่อ Admin ทั้งหมด</button>
-       <button class="btnaddAdmin" id="btnShowUser" style="display:none;">รายชื่อ User ทั้งหมด</button>
+       <button class="btnaddAdmin" id="btnShowUser" >รายชื่อ User ทั้งหมด</button>
     </div>
 </div>
 
@@ -224,11 +235,11 @@
     </table>
 
 
-    <!-- Modal สำหรับแสดงข้อมูล API -->
+    <!-- Modal สำหรับแสดงข้อมูล  -->
 <div id="apiModal" class="modal">
   <div class="modal-content api-modal-content">
     <span class="close" id="closeApiModal">&times;</span>
-    <h3>Order ที่มีการเข้าชั่งวันนี้</h3>
+    <h3>Order ที่มีการลงทะเบียนเข้าชั่ง</h3>
     <table id="apiDataTable" class="data-table">
       <thead>
         <tr>
@@ -241,7 +252,6 @@
         <th>แผนกที่ต้องการติดต่อ</th>
         <th>วันที่ที่จะเข้าชั่ง</th>
         <th>เวลาที่จะเข้าชั่ง</th>
-        <th>id_user</th>
         <th>Action</th>
         </tr>
       </thead>
@@ -253,6 +263,98 @@
     </table>
   </div>
 </div>
+
+    <!-- ที่ชั่งเสร็จแล้ว  -->
+<div id="apiModalSuccess" class="modal">
+  <div class="modal-content api-modal-content">
+    <span class="close" id="closeApiModalSuccess">&times;</span>
+    <h3>Order ที่เตรียมชั่ง</h3>
+    <table id="apiDataTable" class="data-table">
+      <thead>
+        <tr>
+          <th>ชื่อ Supplier</th>
+        <th>ชื่อ นามสกุล</th>
+        <th>ชนิดรถ</th>
+        <th>ทะเบียนรถ</th>
+        <th>ทะเบียนรถ ท้าย</th>
+        <th>สินค้า</th>
+        <th>แผนกที่ต้องการติดต่อ</th>
+        <th>วันที่ที่จะเข้าชั่ง</th>
+        <th>เวลาที่จะเข้าชั่ง</th>
+        <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="orderListSuccess">
+        <tr>
+          <td colspan="8">กำลังโหลดข้อมูล...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+    <!-- รายการ Admin สำหรับ Super Admin  -->
+<div id="apiModalshowinfoAdmin" class="modal">
+  <div class="modal-content api-modal-content">
+    <span class="close" id="closeApiModalshowinfoAdmin">&times;</span>
+    <h3>รายชื่อ ผู้ดูแลระบบ(Admin) ทุกแผนก</h3>
+    <table id="apiDataTable" class="data-table">
+      <thead>
+        <tr>
+            <th>id</th>
+            <th>ชื่อ-นามสกุล</th>
+        <th>ชื่อ</th>
+        <th>หรัสผ่าน</th>
+        <th>ชื่อ Supplier</th>
+        <th>สิทธิ์การใช้งาน</th>
+        <th>แผนกที่ติดต่อ</th>
+        <th>เบอร์โทร</th>
+        <th>Action</th>
+      
+        </tr>
+      </thead>
+      <tbody id="orderListshowinfoAdmin">
+        <tr>
+          <td colspan="8">กำลังโหลดข้อมูล...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+    <!-- แสดงรายการ Admin สำหรับ Super  -->
+<div id="apiModalshowinfoUser" class="modal">
+  <div class="modal-content api-modal-content">
+    <span class="close" id="closeapiModalshowinfoUser">&times;</span>
+    <h3>รายชื่อ ผู้ใช้งาน(User) ที่สามารถเข้าใช้งานระบบได้</h3>
+    <table id="apiDataTable" class="data-table">
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>ชื่อ-นามสกุล</th>
+        <th>ชื่อ</th>
+        <th>หรัสผ่าน</th>
+        <th>ชื่อ Supplier</th>
+        <th>สิทธิ์การใช้งาน</th>
+        <th>แผนกที่ติดต่อ</th>
+        <th>เบอร์โทร</th>
+        <th>Action</th>
+
+      
+        </tr>
+      </thead>
+      <tbody id="orderListshowinfoUser">
+        <tr>
+          <td colspan="8">กำลังโหลดข้อมูล...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
 
 <!-- <div id="adminModal" class="modal" style="display:none;">
   <div class="modal-content" style="background:#fff; padding:20px; border-radius:8px; width:300px; margin:auto;">
