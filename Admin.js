@@ -1189,7 +1189,7 @@ async function Sub_AdminRejectUser(id) {
         });
 
         // โหลดข้อมูลใหม่หลังลบสำเร็จ
-        await loaddataListAdmin();
+        await loaddataListUser();
 
     } catch (err) {
         console.error('Error deleting admin:', err);
