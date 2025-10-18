@@ -200,7 +200,7 @@
         <button class="fetch-btn">Order ที่มีรอการยอมรับเข้าชั่ง</button>
         <button class="fetchSuccess-btn" >ปุ่ม Order ที่เตรียมเข้าชั่ง</button>
        <button class="btnaddAdmin" id="btnaddAdmin" style="display:none;">เพิ่มข้อมูล Admin</button>
-       <button class="btnaddAdmin" id="btnShowAdmin" style="display:none;">รายชื่อ Admin ทั้งหมด</button>
+       <button class="btnaddAdmin" id="btnShowAdmin" style="display:none;">รายชื่อ Admin และ Super Admin ทั้งหมด</button>
        <button class="btnaddAdmin" id="btnShowUser" >รายชื่อ User ทั้งหมด</button>
     </div>
 </div>
@@ -235,7 +235,7 @@
     </table>
 
 
-    <!-- Modal สำหรับแสดงข้อมูล  -->
+    <!-- Modal สำหรับแสดงข้อมูล ยอมรับ หรือ ไม่ยอมรับ  -->
 <div id="apiModal" class="modal">
   <div class="modal-content api-modal-content">
     <span class="close" id="closeApiModal">&times;</span>
@@ -252,6 +252,10 @@
         <th>แผนกที่ต้องการติดต่อ</th>
         <th>วันที่ที่จะเข้าชั่ง</th>
         <th>เวลาที่จะเข้าชั่ง</th>
+       <th style="display:none;">id_user</th>
+
+
+        
         <th>Action</th>
         </tr>
       </thead>
@@ -294,7 +298,7 @@
 </div>
 
 
-    <!-- รายการ Admin สำหรับ Super Admin  -->
+    <!-- รายการcแสดง Admin-Super สำหรับ Super Admin  -->
 <div id="apiModalshowinfoAdmin" class="modal">
   <div class="modal-content api-modal-content">
     <span class="close" id="closeApiModalshowinfoAdmin">&times;</span>

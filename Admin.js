@@ -199,22 +199,7 @@ btnSaveAdmin.addEventListener('click', async () => {
 
 
 
-// ออกจากระบบ 
-// logoutadmin.addEventListener('click', async () => {
-//     const result = await Swal.fire({
-//         title: 'คุณต้องการออกจากระบบหรือไม่?',
-//         icon: 'question',
-//         showCancelButton: true,
-//         confirmButtonText: 'ใช่',
-//         cancelButtonText: 'ยกเลิก'
-//     });
-
-//     if (result.isConfirmed) {
-//         sessionStorage.clear();
-//         window.location.href = '/Homepage.html';
-//     }
-// });
-
+//ออกจากระบบ 
 logoutadmin.addEventListener('click', async () => {
     const result = await Swal.fire({
         title: 'คุณต้องการออกจากระบบหรือไม่?',
@@ -223,37 +208,16 @@ logoutadmin.addEventListener('click', async () => {
         confirmButtonText: 'ใช่',
         cancelButtonText: 'ยกเลิก'
     });
-    
+
     if (result.isConfirmed) {
-        try {
-            // 🔹 ดึง session จาก sessionStorage
-            const session = JSON.parse(sessionStorage.getItem('userSession'));
-            
-            if (session && session.sessionKey) {
-                // 🔹 เรียก API logout เพื่อลบ session ใน server
-                await fetch('https://server-pepsicola-1.onrender.com/logout-adminanduser', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        sessionKey: session.sessionKey 
-                    })
-                });
-            }
-            
-            // 🔹 ลบ session ใน client
-            sessionStorage.clear();
-            
-            // 🔹 redirect ไปหน้า login
-            window.location.href = '/Homepage.html';
-            
-        } catch (err) {
-            console.error('Logout error:', err);
-            // แม้ logout ไม่สำเร็จก็ให้ลบ session และ redirect
-            sessionStorage.clear();
-            window.location.href = '/Homepage.html';
-        }
+        sessionStorage.clear();
+        window.location.href = '/Homepage.html';
     }
 });
+
+
+
+
 
 
 
@@ -512,6 +476,7 @@ async function handleAcceptSimple(button) {
         showCancelButton: true,
         confirmButtonText: 'ยืนยัน',
         cancelButtonText: 'ยกเลิก'
+
     });
 
     if (!result.isConfirmed) {
@@ -805,7 +770,7 @@ function displayModalData(data) {
              <td>${row.Date || 'N/A'}</td> 
 <!-- <td>${row.Date ? new Date(row.Date).toISOString().split('T')[0] : 'N/A'}</td> -->
             <td>${row.Time || 'N/A'}</td>
-            <!-- <td>${row.id_user || 'N/A'}</td> -->
+          <td style="display:none;">${row.id_user || ''}</td>
                
            
             <td>
@@ -986,8 +951,6 @@ async function loaddataListAdmin() {
 
     } catch (err) {
         console.error('Error loading department data:', err);
-        const orderList = document.getElementById('orderList');
-        orderList.innerHTML = '<tr><td colspan="7">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>';
         alert('เกิดข้อผิดพลาดในการโหลดข้อมูล');
     }
 }
@@ -1189,7 +1152,7 @@ async function Sub_AdminRejectUser(id) {
         });
 
         // โหลดข้อมูลใหม่หลังลบสำเร็จ
-        await loaddataListUser();
+        await loaddataListAdmin();
 
     } catch (err) {
         console.error('Error deleting admin:', err);
