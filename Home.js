@@ -1,4 +1,4 @@
-
+//
     
       // Switch Login & Register
         const logintoRegister = document.getElementById('logintoRegister');
