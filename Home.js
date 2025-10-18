@@ -136,20 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         try {
-            // const response = await fetch('http://localhost:3000/api/register', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({
-            //         fullName: fullname,
-            //         username: usernameInput.value.trim(),
-            //         password: passwordInput.value,
-            //         phone: phoneInput.value.trim(),
-            //         supplierName: supplier_name,
-            //         department: department
-            //     }),
-            // });
-
-              const response = await fetch('https://server-pepsicola-1.onrender.com/api/register', {
+            const response = await fetch('https://server-pepsicola-1.onrender.com/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -161,6 +148,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     department: department
                 }),
             });
+
+            
 
 
             const data = await response.json();
@@ -237,18 +226,13 @@ btnloginAdmin.addEventListener('click', async (e) => {
 
     try {
 
-        //  const response = await fetch('http://localhost:3000/loginAdminandUser', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify(data),
-        // });
-
          const response = await fetch('https://server-pepsicola-1.onrender.com/loginAdminandUser', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
         });
 
+        
 
 
        if (response.status === 440) {
